@@ -1,13 +1,13 @@
-import { Phone, Mail } from "lucide-react";
+import Link from "next/link";
+import { Button } from '@/components/ui/button'
+import { Phone, Mail, Github } from "lucide-react";
 
 const manager = {
 	name: "Gestor",
 	cellphone: "(82) 9 8185-2058",
 	email: "josafaverissimo98@gmail.com",
-	photo: "https://thispersondoesnotexist.com/",
+	github: "https://github.com/josafaverissimo/",
 };
-
-const managers = Array(4).fill(manager);
 
 export default function Contact() {
 	return (
@@ -19,7 +19,7 @@ export default function Contact() {
 						<p className="text-brand-secondary-500 dark:text-brand-secondary-dark-500">
 							Transfome desafios em oportunidades!
 						</p>
-						<p className="text-2xl font-bold text-brand-secondary-500 dark:text-brand-secondary-dark-500">
+						<p className="text-3xl font-bold text-brand-secondary-500 dark:text-brand-secondary-dark-500">
 							Fale conosco e encontre as soluções ideais para sua empresa
 						</p>
 						<p>
@@ -39,42 +39,20 @@ export default function Contact() {
 
 							<div>
 								<p>Desenvolvedor</p>
-								<span className="flex gap-2">
+								<span className="flex gap-2 items-center">
 									<Phone className="!w-4 !h-4" />
 									<p>{manager.cellphone}</p>
 								</span>
-								<span className="flex gap-2">
+								<span className="flex gap-2 items-center">
 									<Mail className="!w-4 !h-4" />
 									<p>{manager.email}</p>
 								</span>
+								<span className="flex gap-2 items-center">
+									<Github className="w-4 h-4"/>
+									<Link href={manager.github} className="text-brand-secondary-500 dark:text-brand-secondary-dark-500">Github</Link>
+								</span>
 							</div>
 						</div>
-
-						<ul className="flex justify-center flex-wrap gap-4">
-							{managers.map((manager, index) => (
-								<li
-									key={manager.name + index}
-									className="text-xs flex items-center gap-2"
-								>
-									<img
-										className="max-w-10 rounded-full"
-										src={manager.photo}
-										alt={manager.name}
-									/>
-									<div>
-										<p>{manager.name}</p>
-										<span className="flex gap-2">
-											<Phone className="!w-4 !h-4" />
-											<p>{manager.cellphone}</p>
-										</span>
-										<span className="flex gap-2">
-											<Mail className="!w-4 !h-4" />
-											<p>{manager.email}</p>
-										</span>
-									</div>
-								</li>
-							))}
-						</ul>
 					</div>
 				</div>
 			</div>

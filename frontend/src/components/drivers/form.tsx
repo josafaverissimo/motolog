@@ -1,5 +1,7 @@
 "use client";
 
+import { useState, useRef, ChangeEvent } from "react";
+
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -15,7 +17,8 @@ import {
 	FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Switch } from "@/components/ui/switch"
+import { Switch } from "@/components/ui/switch";
+import { ImagePreview } from "@/components/common/imagePreview";
 
 const formSchema = z.object({
 	name: z.string().min(2).max(50),
@@ -30,6 +33,11 @@ const formSchema = z.object({
 });
 
 export function DriversForm() {
+	const cnhRef = useRef<HTMLInputElement | null>(null)
+	const crlvRef = useRef<HTMLInputElement | null>(null)
+	const [cnh, setCnh] = useState<File | null>(null);
+	const [crlv, setCrlv] = useState<File | null>(null);
+
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
@@ -49,18 +57,31 @@ export function DriversForm() {
 		console.log(values);
 	}
 
+	function handlerImageInput(
+		event: ChangeEvent<HTMLInputElement>,
+		setter: React.Dispatch<React.SetStateAction<File | null>>,
+	) {
+		const input = event.target;
+
+		if (!input.files) {
+			return;
+		}
+
+		setter(input.files[0]);
+	}
+
 	return (
 		<Form {...form}>
 			<form
 				onSubmit={form.handleSubmit(onSubmit)}
-				className="flex flex-col flex-wrap"
+				className="flex flex-col flex-wrap w-full gap-2"
 			>
-				<div className="flex gap-4">
+				<div className="flex flex-col md:flex-row gap-4">
 					<FormField
 						control={form.control}
 						name="name"
 						render={({ field }) => (
-							<FormItem>
+							<FormItem className="flex-auto">
 								<FormLabel>Nome</FormLabel>
 
 								<FormControl>
@@ -78,7 +99,7 @@ export function DriversForm() {
 						control={form.control}
 						name="cpf"
 						render={({ field }) => (
-							<FormItem>
+							<FormItem className="flex-auto">
 								<FormLabel>CPF</FormLabel>
 
 								<FormControl>
@@ -96,7 +117,7 @@ export function DriversForm() {
 						control={form.control}
 						name="birthdate"
 						render={({ field }) => (
-							<FormItem>
+							<FormItem className="flex-auto">
 								<FormLabel>Data de nascimento</FormLabel>
 
 								<FormControl>
@@ -111,7 +132,7 @@ export function DriversForm() {
 					/>
 				</div>
 
-				<div className="flex gap-4">
+				<div className="flex flex-col md:flex-row gap-4">
 					<FormField
 						control={form.control}
 						name="phone"
@@ -136,7 +157,7 @@ export function DriversForm() {
 						control={form.control}
 						name="email"
 						render={({ field }) => (
-							<FormItem  className="flex-auto">
+							<FormItem className="flex-auto">
 								<FormLabel>Email</FormLabel>
 
 								<FormControl>
@@ -151,7 +172,7 @@ export function DriversForm() {
 					/>
 				</div>
 
-				<div className="flex gap-4">
+				<div>
 					<FormField
 						control={form.control}
 						name="address"
@@ -169,7 +190,9 @@ export function DriversForm() {
 							</FormItem>
 						)}
 					/>
+				</div>
 
+				<div>
 					<FormField
 						control={form.control}
 						name="status"
@@ -178,8 +201,7 @@ export function DriversForm() {
 								<FormLabel>Status</FormLabel>
 
 								<FormControl>
-								  <Switch {...field} />
-
+									<Switch {...field} />
 								</FormControl>
 
 								<FormMessage />
@@ -188,19 +210,29 @@ export function DriversForm() {
 					/>
 				</div>
 
-				<div className="flex gap-4">
+				<div className="flex flex-col md:flex-row gap-4">
 					<FormField
 						control={form.control}
 						name="cnh"
 						render={({ field }) => (
-							<FormItem className="flex-auto">
+							<FormItem className="basis-[50%] flex-grow-0 flex-shrink-0 min-w-0">
 								<FormLabel>CNH</FormLabel>
 
 								<FormControl>
-									<Input {...field} type="file" />
+									<div className="cursor-pointer" onClick={() => cnhRef.current!.click()}>
+										<Input
+											{...field}
+											ref={cnhRef}
+											type="file"
+											accept="image/*"
+											onChange={(e) => handlerImageInput(e, setCnh)}
+											className="hidden"
+										/>
+										<ImagePreview image={cnh} />
+									</div>
 								</FormControl>
 
-								<FormDescription>Informe onde você mora</FormDescription>
+								<FormDescription>Envie a foto da CNH</FormDescription>
 
 								<FormMessage />
 							</FormItem>
@@ -211,14 +243,25 @@ export function DriversForm() {
 						control={form.control}
 						name="crlv"
 						render={({ field }) => (
-							<FormItem className="flex-auto">
+							<FormItem className="basis-[50%] flex-grow-0 flex-shrink-0 min-w-0">
 								<FormLabel>CRLV</FormLabel>
 
 								<FormControl>
-									<Input {...field} type="file" />
+									<div className="cursor-pointer" onClick={() => crlvRef.current!.click()}>
+										<Input
+											{...field}
+											ref={crlvRef}
+											type="file"
+											accept="image/*"
+											onChange={(e) => handlerImageInput(e, setCrlv)}
+											className="hidden"
+										/>
+
+										<ImagePreview image={crlv} />
+									</div>
 								</FormControl>
 
-								<FormDescription>Informe onde você mora</FormDescription>
+								<FormDescription>Envie a foto do CRLV</FormDescription>
 
 								<FormMessage />
 							</FormItem>
@@ -226,7 +269,17 @@ export function DriversForm() {
 					/>
 				</div>
 
-				<Button type="submit">Submit</Button>
+				<Button
+					type="submit"
+					className="
+						bg-brand-300 dark:bg-brand-dark-300
+						text-brand-600 dark:text-brand-dark-600
+						hover:bg-brand-400 dark:hover:bg-brand-dark-200
+						mt-4
+					"
+				>
+					Enviar
+				</Button>
 			</form>
 		</Form>
 	);
