@@ -1,7 +1,7 @@
 'use client'
 
 import Link from "next/link";
-import { BusFront, Home } from "lucide-react";
+import { BusFront, Home, Phone } from "lucide-react";
 import { usePathname } from "next/navigation";
 import {
 	Sidebar,
@@ -24,10 +24,15 @@ export function AppSidebar() {
 			active: false
 		},
 		{
-			url: "/form",
+			url: "/drivers",
 			icon: BusFront,
 			active: false
 		},
+		{
+			url: "/contact",
+			icon: Phone,
+			active: false
+		}
 	];
 
 	for(const item of items) {
