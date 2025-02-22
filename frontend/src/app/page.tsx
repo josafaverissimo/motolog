@@ -28,12 +28,12 @@ export default function Home() {
 
 						<Button
 							className="
-						bg-brand-ternary-300 dark:bg-brand-ternary-dark-300
-						text-brand-ternary-600 dark:text-brand-ternary-dark-600
-						font-bold text-lg
-						hover:bg-brand-300 dark:hover:bg-brand-dark-300
-						hover:text-brand-600 dark:hover:text-brand-dark-600
-					"
+								bg-brand-ternary-300 dark:bg-brand-ternary-dark-300
+								text-brand-ternary-600 dark:text-brand-ternary-dark-600
+								font-bold text-lg
+								hover:bg-brand-300 dark:hover:bg-brand-dark-300
+								hover:text-brand-600 dark:hover:text-brand-dark-600
+							"
 						>
 							<Link href="/drivers">Cadastrar Motorista</Link>
 						</Button>

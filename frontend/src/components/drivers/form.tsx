@@ -33,8 +33,8 @@ const formSchema = z.object({
 });
 
 export function DriversForm() {
-	const cnhRef = useRef<HTMLInputElement | null>(null)
-	const crlvRef = useRef<HTMLInputElement | null>(null)
+	const cnhRef = useRef<HTMLInputElement | null>(null);
+	const crlvRef = useRef<HTMLInputElement | null>(null);
 	const [cnh, setCnh] = useState<File | null>(null);
 	const [crlv, setCrlv] = useState<File | null>(null);
 
@@ -124,7 +124,7 @@ export function DriversForm() {
 									<Input {...field} />
 								</FormControl>
 
-								<FormDescription>Informe seu cpf</FormDescription>
+								<FormDescription>Informe sua data de nascimento</FormDescription>
 
 								<FormMessage />
 							</FormItem>
@@ -198,7 +198,7 @@ export function DriversForm() {
 						name="status"
 						render={({ field }) => (
 							<FormItem className="basis-[5%] flex flex-col">
-								<FormLabel>Status</FormLabel>
+								<FormLabel>Ativo</FormLabel>
 
 								<FormControl>
 									<Switch {...field} />
@@ -219,7 +219,15 @@ export function DriversForm() {
 								<FormLabel>CNH</FormLabel>
 
 								<FormControl>
-									<div className="cursor-pointer" onClick={() => cnhRef.current!.click()}>
+									<div
+										className="cursor-pointer"
+										onClick={() => cnhRef.current?.click()}
+										onKeyDown={(e) => {
+											if (e.key === "Enter" || e.key === " ") {
+												crlvRef.current?.click();
+											}
+										}}
+									>
 										<Input
 											{...field}
 											ref={cnhRef}
@@ -247,7 +255,15 @@ export function DriversForm() {
 								<FormLabel>CRLV</FormLabel>
 
 								<FormControl>
-									<div className="cursor-pointer" onClick={() => crlvRef.current!.click()}>
+									<div
+										className="cursor-pointer"
+										onClick={() => crlvRef.current?.click()}
+										onKeyDown={(e) => {
+											if (e.key === "Enter" || e.key === " ") {
+												crlvRef.current?.click();
+											}
+										}}
+									>
 										<Input
 											{...field}
 											ref={crlvRef}
@@ -272,10 +288,11 @@ export function DriversForm() {
 				<Button
 					type="submit"
 					className="
-						bg-brand-300 dark:bg-brand-dark-300
-						text-brand-600 dark:text-brand-dark-600
-						hover:bg-brand-400 dark:hover:bg-brand-dark-200
-						mt-4
+						bg-brand-ternary-300 dark:bg-brand-ternary-dark-300
+						text-brand-ternary-600 dark:text-brand-ternary-dark-600
+						font-bold text-lg
+						hover:bg-brand-300 dark:hover:bg-brand-dark-300
+						hover:text-brand-600 dark:hover:text-brand-dark-600
 					"
 				>
 					Enviar

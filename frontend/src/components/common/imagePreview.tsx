@@ -1,41 +1,63 @@
 import { useState, useEffect } from "react";
 import { Image } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
 
 type ImagePreviewProps = {
-  image: File | null;
+	image: File | null;
 };
 
 export function ImagePreview({ image }: ImagePreviewProps) {
-  const [imageSrc, setImageSrc] = useState<string | null>(null);
+	const [imageSrc, setImageSrc] = useState<string | null>(null);
+	const [imageName, setImageName] = useState<string>("");
+	const [imageSize, setImageSize] = useState<string>("");
 
-  useEffect(() => {
-    if (!image) {
-      setImageSrc(null);
+	useEffect(() => {
+		if (!image) {
+			setImageSrc(null);
 
-      return;
-    }
+			return;
+		}
 
-    setImageSrc(URL.createObjectURL(image));
+		console.log(image)
+		const sizeKib = Number((image.size / 1024).toFixed(2))
+		const sizeMib = Number((sizeKib / 1024).toFixed(2))
+		const size = sizeKib > 1024 ? `${sizeMib}MiB` : `${sizeKib}KiB`
 
-    console.log(imageSrc);
+		setImageName(image.name)
+		setImageSize(size)
 
-    return () => URL.revokeObjectURL(imageSrc!);
-  }, [image]);
+		setImageSrc(URL.createObjectURL(image));
+	}, [image]);
 
-  return (
-    <Card>
-      <CardContent className="flex justify-center items-center p-0 max-h-[10rem] h-[10rem]">
-        {imageSrc ? (
-          <img
-            src={imageSrc}
-            alt="imagem"
-            className="max-w-full max-h-full object-contain"
-          />
-        ) : (
-          <Image />
-        )}
-      </CardContent>
-    </Card>
-  );
+	function renderFooter() {
+	  if(!imageName || !imageSize) {
+	    return
+	  }
+
+	  return (
+	    <CardFooter>
+				<p className="text-xs">
+					{imageName} | {imageSize}
+				</p>
+			</CardFooter>
+	  )
+	}
+
+	return (
+		<Card>
+			<CardContent className="flex justify-center items-center p-0 max-h-[10rem] h-[10rem]">
+				{imageSrc ? (
+					<img
+						src={imageSrc}
+						alt="imagem"
+						className="max-w-full max-h-full object-contain"
+					/>
+				) : (
+					<Image />
+				)}
+			</CardContent>
+
+      {renderFooter()}
+		</Card>
+	);
 }

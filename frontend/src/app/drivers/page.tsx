@@ -11,7 +11,7 @@ import { ChevronsUpDown, ChevronsDownUp } from "lucide-react";
 import { DriversForm } from "@/components/drivers/form";
 
 export default function Drivers() {
-	const [isFormOpen, setIsFormOpen] = useState(false);
+	const [isFormOpen, setIsFormOpen] = useState(true);
 
 	function toggleForm() {
 		setIsFormOpen(!isFormOpen);
@@ -24,6 +24,7 @@ export default function Drivers() {
 			<div className="w-full">
 				<div className="flex flex-col items-center">
 					<Collapsible
+						defaultOpen={isFormOpen}
 						className="
 							flex flex-col w-full lg:max-w-[60%] lg:w-[60%] 2xl:max-w-[50%] 2xl:w-[50%]
 						"
