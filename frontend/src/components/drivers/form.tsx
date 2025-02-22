@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useRef, ChangeEvent } from "react";
-
+import { useState, useRef } from "react";
+import type { ChangeEvent } from "react";
+import type { ControllerRenderProps } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -17,19 +18,48 @@ import {
 	FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { IMaskInput } from "@/components/common/imaskInput";
 import { Switch } from "@/components/ui/switch";
 import { ImagePreview } from "@/components/common/imagePreview";
+import { DatePicker } from "@/components/ui/datepicker";
+
+const minimumAge = new Date();
+minimumAge.setFullYear(minimumAge.getFullYear() - 18);
+
+const MIN_3_CHARACTERS = "O campo deve ter no mínimo 3 caracteres";
+const MAX_500_CHARACTERS = "O campo deve ter no máximo 500 caracteres";
+const LENGTH_14_CHARACTERS = "O campo deve ter 14 caracteres";
+const LENGTH_16_CHARACTERS = "O campo deve ter 16 caracteres";
+
+const IMAGE_VALIDATION = z
+	.instanceof(File, { message: "O campo é obrigatório" })
+	.refine(
+		(file) => file.type.split("/")[0] === "image",
+		"O arquivo deve ser uma imagem",
+	);
 
 const formSchema = z.object({
-	name: z.string().min(2).max(50),
-	cpf: z.string().min(2).max(50),
-	birthdate: z.string().min(2).max(50),
-	phone: z.string().min(2).max(50),
-	email: z.string().min(2).max(50),
-	address: z.string().min(2).max(50),
-	status: z.string().min(2).max(50),
-	cnh: z.string().min(2).max(50),
-	crlv: z.string().min(2).max(50),
+	name: z.string().min(3, MIN_3_CHARACTERS).max(500, MAX_500_CHARACTERS),
+	cpf: z.string().length(14, LENGTH_14_CHARACTERS),
+	birthdate: z
+		.string()
+		.refine(
+			(date) => new Date(date) < minimumAge,
+			"Deve-se ter no mínimo 18 anos",
+		),
+	phone: z.string().length(16, LENGTH_16_CHARACTERS),
+	email: z
+		.string()
+		.email("Email inválido")
+		.min(3, MIN_3_CHARACTERS)
+		.max(500, MAX_500_CHARACTERS),
+	address: z
+		.string()
+		.min(10, "O campo deve ter no mínimo 10 caracteres")
+		.max(500, "O campo deve ter no máximo 500 caracteres"),
+	status: z.boolean().default(false).optional(),
+	cnh: IMAGE_VALIDATION,
+	crlv: IMAGE_VALIDATION,
 });
 
 export function DriversForm() {
@@ -47,9 +77,9 @@ export function DriversForm() {
 			phone: "",
 			email: "",
 			address: "",
-			status: "",
-			cnh: "",
-			crlv: "",
+			status: false,
+			cnh: undefined,
+			crlv: undefined,
 		},
 	});
 
@@ -59,6 +89,7 @@ export function DriversForm() {
 
 	function handlerImageInput(
 		event: ChangeEvent<HTMLInputElement>,
+		field: ControllerRenderProps<any, string>,
 		setter: React.Dispatch<React.SetStateAction<File | null>>,
 	) {
 		const input = event.target;
@@ -68,6 +99,7 @@ export function DriversForm() {
 		}
 
 		setter(input.files[0]);
+		field.onChange(input.files[0]);
 	}
 
 	return (
@@ -103,7 +135,7 @@ export function DriversForm() {
 								<FormLabel>CPF</FormLabel>
 
 								<FormControl>
-									<Input {...field} />
+									<IMaskInput {...field} mask="000.000.000-00" />
 								</FormControl>
 
 								<FormDescription>Informe seu cpf</FormDescription>
@@ -121,10 +153,18 @@ export function DriversForm() {
 								<FormLabel>Data de nascimento</FormLabel>
 
 								<FormControl>
-									<Input {...field} />
+									<div>
+										<DatePicker
+											onSelectAction={(date) => {
+												field.onChange(date?.toISOString().split("T")[0]);
+											}}
+										/>
+									</div>
 								</FormControl>
 
-								<FormDescription>Informe sua data de nascimento</FormDescription>
+								<FormDescription>
+									Informe sua data de nascimento
+								</FormDescription>
 
 								<FormMessage />
 							</FormItem>
@@ -141,7 +181,7 @@ export function DriversForm() {
 								<FormLabel>Celular</FormLabel>
 
 								<FormControl>
-									<Input {...field} />
+									<IMaskInput {...field} mask="(00) 9 0000-0000" />
 								</FormControl>
 
 								<FormDescription>
@@ -192,30 +232,12 @@ export function DriversForm() {
 					/>
 				</div>
 
-				<div>
-					<FormField
-						control={form.control}
-						name="status"
-						render={({ field }) => (
-							<FormItem className="basis-[5%] flex flex-col">
-								<FormLabel>Ativo</FormLabel>
-
-								<FormControl>
-									<Switch {...field} />
-								</FormControl>
-
-								<FormMessage />
-							</FormItem>
-						)}
-					/>
-				</div>
-
 				<div className="flex flex-col md:flex-row gap-4">
 					<FormField
 						control={form.control}
 						name="cnh"
 						render={({ field }) => (
-							<FormItem className="basis-[50%] flex-grow-0 flex-shrink-0 min-w-0">
+							<FormItem className="basis-[50%]">
 								<FormLabel>CNH</FormLabel>
 
 								<FormControl>
@@ -229,11 +251,10 @@ export function DriversForm() {
 										}}
 									>
 										<Input
-											{...field}
 											ref={cnhRef}
 											type="file"
 											accept="image/*"
-											onChange={(e) => handlerImageInput(e, setCnh)}
+											onChange={(e) => handlerImageInput(e, field, setCnh)}
 											className="hidden"
 										/>
 										<ImagePreview image={cnh} />
@@ -251,7 +272,7 @@ export function DriversForm() {
 						control={form.control}
 						name="crlv"
 						render={({ field }) => (
-							<FormItem className="basis-[50%] flex-grow-0 flex-shrink-0 min-w-0">
+							<FormItem className="basis-[50%]">
 								<FormLabel>CRLV</FormLabel>
 
 								<FormControl>
@@ -265,11 +286,10 @@ export function DriversForm() {
 										}}
 									>
 										<Input
-											{...field}
 											ref={crlvRef}
 											type="file"
 											accept="image/*"
-											onChange={(e) => handlerImageInput(e, setCrlv)}
+											onChange={(e) => handlerImageInput(e, field, setCrlv)}
 											className="hidden"
 										/>
 
@@ -278,6 +298,27 @@ export function DriversForm() {
 								</FormControl>
 
 								<FormDescription>Envie a foto do CRLV</FormDescription>
+
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+				</div>
+
+				<div>
+					<FormField
+						control={form.control}
+						name="status"
+						render={({ field }) => (
+							<FormItem className="basis-[5%] flex flex-col">
+								<FormLabel>Ativo</FormLabel>
+
+								<FormControl>
+									<Switch
+										checked={field.value}
+										onCheckedChange={field.onChange}
+									/>
+								</FormControl>
 
 								<FormMessage />
 							</FormItem>

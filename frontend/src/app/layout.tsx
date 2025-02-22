@@ -13,8 +13,6 @@ export default function RootLayout({
 }>) {
 	const theme = localStorage.getItem('theme') || 'dark'
 
-	console.log(theme)
-
 	return (
 		<html lang="pt-BR" className={theme === 'dark' ? 'dark' : ''}>
 			<head>

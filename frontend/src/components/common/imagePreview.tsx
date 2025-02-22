@@ -18,7 +18,6 @@ export function ImagePreview({ image }: ImagePreviewProps) {
 			return;
 		}
 
-		console.log(image)
 		const sizeKib = Number((image.size / 1024).toFixed(2))
 		const sizeMib = Number((sizeKib / 1024).toFixed(2))
 		const size = sizeKib > 1024 ? `${sizeMib}MiB` : `${sizeKib}KiB`
