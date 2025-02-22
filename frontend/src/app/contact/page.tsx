@@ -9,7 +9,7 @@ const manager = {
 
 const managers = Array(4).fill(manager);
 
-export default function Page() {
+export default function Contact() {
 	return (
 		<>
 			<h1 className="text-3xl">Contato</h1>
