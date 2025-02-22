@@ -21,21 +21,17 @@ export function AppHeader() {
 				<ul className="flex">
 					<li>
 						<Button variant="link">
-							<Link className="text-brand-secondary-500 dark:text-brand-secondary-dark-500" href="#">
-								Serviços
+							<Link
+								href="https://github.com/josafaverissimo"
+								target="_blank"
+							>
+								Quem Somos?
 							</Link>
 						</Button>
 					</li>
 					<li>
 						<Button variant="link">
-							<Link className="text-brand-secondary-500 dark:text-brand-secondary-dark-500" href="#">
-								Suporte
-							</Link>
-						</Button>
-					</li>
-					<li>
-						<Button variant="link">
-							<Link className="text-brand-secondary-500 dark:text-brand-secondary-dark-500" href="#">
+							<Link href="/contact">
 								Contato
 							</Link>
 						</Button>
