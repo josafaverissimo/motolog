@@ -22,6 +22,7 @@ import { IMaskInput } from "@/components/common/imaskInput";
 import { Switch } from "@/components/ui/switch";
 import { ImagePreview } from "@/components/common/imagePreview";
 import { DatePicker } from "@/components/ui/datepicker";
+import { validateCpf } from "@/lib/utils";
 
 const minimumAge = new Date();
 minimumAge.setFullYear(minimumAge.getFullYear() - 18);
@@ -40,7 +41,7 @@ const IMAGE_VALIDATION = z
 
 const formSchema = z.object({
 	name: z.string().min(3, MIN_3_CHARACTERS).max(500, MAX_500_CHARACTERS),
-	cpf: z.string().length(14, LENGTH_14_CHARACTERS),
+	cpf: z.string().length(14, LENGTH_14_CHARACTERS).refine(validateCpf, 'O cpf não é válido'),
 	birthdate: z
 		.string()
 		.refine(
