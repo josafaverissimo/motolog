@@ -12,7 +12,7 @@ interface DriverDataInterface {
 	status?: boolean;
 }
 
-interface Driver {
+export interface Driver {
   createdAt: string;
   updatedAt: string;
   deletedAt: string | null;

@@ -81,15 +81,17 @@ export const baseColumns: ColumnDef<Data>[] = [
 ];
 
 export interface Data {
-  [key: string]: string;
+  [key: string]: string | React.ReactNode;
 }
 
 export interface DataTableProps {
   data: Data[];
 }
 
+const ID_COLUMNS = new Set(['id', 'hash'])
+
 export function DataTable({ data }: DataTableProps) {
-  const columns = Object.keys(data[0]);
+  const columns = Object.keys(data.length && data[0] || {});
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
@@ -98,29 +100,52 @@ export function DataTable({ data }: DataTableProps) {
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
+  React.useEffect(() => {
+    setColumnVisibility({hash: false})
+  }, [])
+
   const columnsDef: ColumnDef<Data>[] = columns.map((column) => {
+    const isId = ID_COLUMNS.has(column)
+
     const columnToAdd: ColumnDef<Data> = {
+      enableHiding: !isId,
       accessorKey: column,
       header: () => <span className="capitalize">{column}</span>,
       cell: ({ row }) => {
         const cellValue = row.getValue(column);
 
-        if (typeof cellValue !== "string") {
+        const isString = typeof cellValue === 'string'
+        const isReactNode = React.isValidElement(cellValue)
+
+        if (!isString && !isReactNode) {
           return;
         }
 
-        const isTextTooLong = cellValue.length > 32;
-        const extraClasses = "border-dotted border-b-neutral-500 border-b-2 cursor-help";
-        const text = isTextTooLong ? cellValue.slice(0, 32) + "..." : cellValue;
+        const getCellValueByType = {
+          'string': () => {
+            const cell = cellValue as string
+            const isTextTooLong = cell.length > 32;
+            const extraClasses = "border-dotted border-b-neutral-500 border-b-2 cursor-help";
+            const text = isTextTooLong ? cell.slice(0, 32) + "..." : cell;
 
-        return (
-          <div
-            className={`lower text-nowrap ${isTextTooLong && extraClasses}`}
-            title={cellValue}
-          >
-            {text}
-          </div>
-        );
+            return (
+              <div
+                className={`lower text-nowrap ${isTextTooLong && extraClasses}`}
+                title={cell}
+              >
+                {text}
+              </div>
+            )
+          },
+          'reactNode': () => cellValue
+        }
+
+        const cellType = isString ? 'string' : 'reactNode'
+        const cell = getCellValueByType[cellType]()
+
+        console.log(cell)
+
+        return cell;
       },
     };
 
