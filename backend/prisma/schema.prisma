@@ -14,17 +14,18 @@ datasource db {
 }
 
 model Driver {
-  id           Int      @id @default(autoincrement())
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  name         String   @db.VarChar(500)
-  cpf          String   @db.VarChar(50)
-  hash         String   @db.VarChar(50)
-  birthdate    DateTime @db.Date
-  phone        String?  @db.VarChar(50)
-  email        String   @db.VarChar(500)
-  address      String   @db.VarChar(500)
-  status       Boolean  @default(false)
-  cnhImageUrl  String   @db.VarChar(1000)
-  crlvImageUrl String   @db.VarChar(100)
+  id           Int       @id @default(autoincrement())
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  deletedAt    DateTime?
+  name         String    @db.VarChar(500)
+  cpf          String    @db.VarChar(50)
+  hash         String    @db.VarChar(50)
+  birthdate    DateTime  @db.Date
+  phone        String?   @db.VarChar(50)
+  email        String    @db.VarChar(500)
+  address      String    @db.VarChar(500)
+  status       Boolean   @default(false)
+  cnhImageUrl  String    @db.VarChar(1000)
+  crlvImageUrl String    @db.VarChar(100)
 }
