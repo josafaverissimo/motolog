@@ -24,7 +24,7 @@ import { DatePicker } from "@/components/ui/datepicker";
 import { validateCpf } from "@/lib/utils";
 import { useMutation } from "@tanstack/react-query";
 import { useDriversService } from "@/services/drivers";
-import { AxiosResponse, AxiosError } from "axios";
+import type { AxiosResponse, AxiosError } from "axios";
 
 const driversService = useDriversService()
 
