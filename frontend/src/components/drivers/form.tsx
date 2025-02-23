@@ -4,6 +4,7 @@ import { ImagePreview } from "@/components/common/imagePreview";
 import { IMaskInput } from "@/components/common/imaskInput";
 import { Button } from "@/components/ui/button";
 import { DatePicker } from "@/components/ui/datepicker";
+import { toast } from 'react-toastify'
 import {
 	Form,
 	FormControl,
@@ -105,7 +106,7 @@ export function DriversForm() {
 
 	function handlerImageInput(
 		event: ChangeEvent<HTMLInputElement>,
-		field: ControllerRenderProps<any, string>,
+		field: ControllerRenderProps<z.infer<typeof formSchema>, keyof z.infer<typeof formSchema>>,
 		setter: React.Dispatch<React.SetStateAction<File | null>>,
 	) {
 		const input = event.target;

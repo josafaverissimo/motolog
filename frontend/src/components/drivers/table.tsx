@@ -53,12 +53,21 @@ export function DriversTable() {
       );
     }
 
+    function readableStatus(status: boolean) {
+      const activeClass = status ? 'bg-green-600' : 'bg-red-600'
+
+      return <div
+        className={`size-4 rounded-full ${activeClass}`}
+      ></div>
+    }
+
     const doReadableByField = {
       createdAt: readableIsoDateTime,
       updatedAt: readableIsoDateTime,
       birthdate: readableIsoDate,
-      cnhImageUrl: readableUrl("Foto da CNH"),
-      crlvImageUrl: readableUrl("Foto da CRLV"),
+      cnhImageUrl: readableUrl("Ver da CNH"),
+      crlvImageUrl: readableUrl("Ver da CRLV"),
+      status: readableStatus
     };
 
     const readableDriverData: { [key: string]: string | ReactNode } = {
