@@ -15,5 +15,9 @@ export function DriversTable() {
 
   if(error) return <span>Erro: {error.message}</span>
 
-  return <DataTable data={data?.drivers as unknown as Data[] || []} />;
+  return (
+    <div className="max-w-full overflow-x-scroll">
+      <DataTable data={data?.drivers as unknown as Data[] || []} />
+    </div>
+  )
 }

@@ -13,7 +13,13 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { ArrowUpDown, ChevronDown, MoreHorizontal, ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  ArrowUpDown,
+  ChevronDown,
+  MoreHorizontal,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -33,40 +39,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-
-const a: Payment[] = [
-  {
-    id: "m5gr84i9",
-    amount: 316,
-    status: "success",
-    email: "ken99@yahoo.com",
-  },
-  {
-    id: "3u1reuv4",
-    amount: 242,
-    status: "success",
-    email: "Abe45@gmail.com",
-  },
-  {
-    id: "derv1ws0",
-    amount: 837,
-    status: "processing",
-    email: "Monserrat44@gmail.com",
-  },
-  {
-    id: "5kma53ae",
-    amount: 874,
-    status: "success",
-    email: "Silas22@gmail.com",
-  },
-  {
-    id: "bhqecj4p",
-    amount: 721,
-    status: "failed",
-    email: "carmella@hotmail.com",
-  },
-];
-
 
 export const baseColumns: ColumnDef<Data>[] = [
   {
@@ -109,15 +81,15 @@ export const baseColumns: ColumnDef<Data>[] = [
 ];
 
 export interface Data {
-  [key: string]: string
+  [key: string]: string;
 }
 
 export interface DataTableProps {
-  data: Data[]
+  data: Data[];
 }
 
 export function DataTable({ data }: DataTableProps) {
-  const columns = Object.keys(data[0])
+  const columns = Object.keys(data[0]);
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
@@ -126,24 +98,36 @@ export function DataTable({ data }: DataTableProps) {
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
-  const columnsDef: ColumnDef<Data>[] = columns.map(column => {
+  const columnsDef: ColumnDef<Data>[] = columns.map((column) => {
     const columnToAdd: ColumnDef<Data> = {
       accessorKey: column,
-      header: () => (<span className="capitalize">{column}</span>),
-      cell: ({ row }) => <div className="lower">{row.getValue(column)}</div>
-    }
+      header: () => <span className="capitalize">{column}</span>,
+      cell: ({ row }) => {
+        const cellValue = row.getValue(column);
 
-    if(column in ['hash', 'id']) {
-      columnToAdd.id = column
-    }
+        if (typeof cellValue !== "string") {
+          return;
+        }
 
-    return columnToAdd
-  })
+        const isTextTooLong = cellValue.length > 32;
+        const extraClasses = "border-dotted border-b-neutral-500 border-b-2 cursor-help";
+        const text = isTextTooLong ? cellValue.slice(0, 32) + "..." : cellValue;
 
-  const allColumns: ColumnDef<Data>[] = [
-    ...baseColumns,
-    ...columnsDef
-  ]
+        return (
+          <div
+            className={`lower text-nowrap ${isTextTooLong && extraClasses}`}
+            title={cellValue}
+          >
+            {text}
+          </div>
+        );
+      },
+    };
+
+    return columnToAdd;
+  });
+
+  const allColumns: ColumnDef<Data>[] = [...baseColumns, ...columnsDef];
 
   const table = useReactTable({
     data,

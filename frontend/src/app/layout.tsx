@@ -26,13 +26,13 @@ export default function RootLayout({
 			<head>
 				<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 			</head>
-			<body>
+			<body className="max-w-[100vw]">
 				<QueryClientProvider client={queryClient}>
 					<SidebarProvider>
 						<div className="flex w-screen">
 							<AppSidebar />
 
-							<div className="flex flex-col flex-auto">
+							<div className="flex flex-col flex-auto min-w-0">
 								<nav
 									className="
 										basis-[2rem] flex items-center px-4 py-2 rounded-xl
