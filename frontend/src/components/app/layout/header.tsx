@@ -1,16 +1,16 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { Moon, Sun } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Moon, Sun } from "lucide-react";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
 export function AppHeader() {
 	const [darkMode, setDarkMode] = useState(true);
 
 	useEffect(() => {
-		setDarkMode(localStorage.getItem('theme') === 'dark')
-	}, [])
+		setDarkMode(localStorage.getItem("theme") === "dark");
+	}, []);
 
 	function toggleDarkMode() {
 		const theme = darkMode ? "light" : "dark";

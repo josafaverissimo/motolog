@@ -2,13 +2,13 @@
 
 import { useState } from "react";
 
+import { DriversForm } from "@/components/drivers/form";
 import {
 	Collapsible,
 	CollapsibleContent,
 	CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { ChevronsUpDown, ChevronsDownUp } from "lucide-react";
-import { DriversForm } from "@/components/drivers/form";
+import { ChevronsDownUp, ChevronsUpDown } from "lucide-react";
 
 export default function Drivers() {
 	const [isFormOpen, setIsFormOpen] = useState(true);

@@ -1,6 +1,6 @@
+import { Button } from "@/components/ui/button";
+import { Github, Mail, Phone } from "lucide-react";
 import Link from "next/link";
-import { Button } from '@/components/ui/button'
-import { Phone, Mail, Github } from "lucide-react";
 
 const manager = {
 	name: "Gestor",
@@ -48,8 +48,13 @@ export default function Contact() {
 									<p>{manager.email}</p>
 								</span>
 								<span className="flex gap-2 items-center">
-									<Github className="w-4 h-4"/>
-									<Link href={manager.github} className="text-brand-secondary-500 dark:text-brand-secondary-dark-500">Github</Link>
+									<Github className="w-4 h-4" />
+									<Link
+										href={manager.github}
+										className="text-brand-secondary-500 dark:text-brand-secondary-dark-500"
+									>
+										Github
+									</Link>
 								</span>
 							</div>
 						</div>

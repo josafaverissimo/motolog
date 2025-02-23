@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/app/layout/sidebar";
 import { AppHeader } from "@/components/app/layout/header";
+import { AppSidebar } from "@/components/app/layout/sidebar";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
 
 import "./globals.css";
 

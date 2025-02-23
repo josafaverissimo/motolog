@@ -1,5 +1,5 @@
-import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 const mainImgUrl =
 	"https://www.vertticegr.com.br/wp-content/uploads/2024/05/Grupo-489.png";
