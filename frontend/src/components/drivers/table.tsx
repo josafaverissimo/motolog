@@ -10,8 +10,13 @@ import type { Driver } from "@/services/drivers";
 
 const driversService = useDriversService();
 
-export function DriversTable({ onEditRow, onDeleteRow }) {
-  const [driversByHash, setDriversByHash] = useState<{[key: string]: Driver}>()
+interface DriversTableProps {
+  onEditRow?: (rowHash: string) => void
+  onDeleteRow?: (rowHash: string) => void
+}
+
+export function DriversTable({ onEditRow, onDeleteRow }: DriversTableProps) {
+  const [driversByHash, setDriversByHash] = useState<Map<string, Driver>>(new Map())
   const [datatableData, setDatatableData] = useState<Data[]>([]);
   const { data, error, isLoading } = useQuery({
     queryKey: ["drivers"],
@@ -68,8 +73,8 @@ export function DriversTable({ onEditRow, onDeleteRow }) {
       createdAt: readableIsoDateTime,
       updatedAt: readableIsoDateTime,
       birthdate: readableIsoDate,
-      cnhImageUrl: readableUrl("Ver da CNH"),
-      crlvImageUrl: readableUrl("Ver da CRLV"),
+      cnhImageUrl: readableUrl("Ver CNH"),
+      crlvImageUrl: readableUrl("Ver CRLV"),
       status: readableStatus,
     };
 
@@ -93,6 +98,13 @@ export function DriversTable({ onEditRow, onDeleteRow }) {
       return;
     }
 
+    setDriversByHash(
+      data.drivers.reduce((drivers, driver) => {
+        drivers.set(driver.hash, driver)
+
+        return drivers
+      }, new Map<string, Driver>())
+    )
 
     setDatatableData(data.drivers.map(doDriverDataReadable));
   }, [data]);
