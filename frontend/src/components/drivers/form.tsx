@@ -6,7 +6,6 @@ import type { ControllerRenderProps } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-
 import { Button } from "@/components/ui/button";
 import {
 	Form,
@@ -23,6 +22,11 @@ import { Switch } from "@/components/ui/switch";
 import { ImagePreview } from "@/components/common/imagePreview";
 import { DatePicker } from "@/components/ui/datepicker";
 import { validateCpf } from "@/lib/utils";
+import { useMutation } from "@tanstack/react-query";
+import { useDriversService } from "@/services/drivers";
+import type { AxiosResponse, AxiosError } from "axios";
+
+const driversService = useDriversService()
 
 const minimumAge = new Date();
 minimumAge.setFullYear(minimumAge.getFullYear() - 18);
@@ -41,14 +45,17 @@ const IMAGE_VALIDATION = z
 
 const formSchema = z.object({
 	name: z.string().min(3, MIN_3_CHARACTERS).max(500, MAX_500_CHARACTERS),
-	cpf: z.string().length(14, LENGTH_14_CHARACTERS).refine(validateCpf, 'O cpf não é válido'),
+	cpf: z
+		.string()
+		.length(14, LENGTH_14_CHARACTERS)
+		.refine(validateCpf, "O cpf não é válido"),
 	birthdate: z
 		.string()
 		.refine(
 			(date) => new Date(date) < minimumAge,
 			"Deve-se ter no mínimo 18 anos",
 		),
-	phone: z.string().length(16, LENGTH_16_CHARACTERS),
+	phone: z.string().length(16, LENGTH_16_CHARACTERS).optional(),
 	email: z
 		.string()
 		.email("Email inválido")
@@ -69,6 +76,10 @@ export function DriversForm() {
 	const [cnh, setCnh] = useState<File | null>(null);
 	const [crlv, setCrlv] = useState<File | null>(null);
 
+	const mutationDriver = useMutation<AxiosResponse, AxiosError, z.infer<typeof formSchema>>({
+		mutationFn: (data) => driversService.addDriver(data)
+	})
+
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
@@ -85,7 +96,7 @@ export function DriversForm() {
 	});
 
 	function onSubmit(values: z.infer<typeof formSchema>) {
-		console.log(values);
+		mutationDriver.mutate(values)
 	}
 
 	function handlerImageInput(

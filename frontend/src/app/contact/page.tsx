@@ -14,8 +14,8 @@ export default function Contact() {
 		<>
 			<h1 className="text-3xl">Contato</h1>
 			<div className="flex justify-center mt-[5%]">
-				<div className="max-w-full xl:max-w-[70%] flex flex-col gap-8 xl:flex-row items-center justify-center">
-					<div className="flex-1">
+				<div className="max-w-full md:max-w-[90%] xl:max-w-[70%] flex flex-col gap-8 lg:flex-row items-center justify-center">
+					<div className="flex-1 flex flex-col gap-4">
 						<p className="text-brand-secondary-500 dark:text-brand-secondary-dark-500">
 							Transfome desafios em oportunidades!
 						</p>
