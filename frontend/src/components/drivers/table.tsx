@@ -17,6 +17,21 @@ export function DriversTable() {
     queryFn: () => driversService.getDrivers(1),
   });
 
+  const columnsAliases = {
+    createdAt: 'criado em',
+    updatedAt: 'atualizado em',
+    name: 'nome',
+    cpf: 'cpf',
+    birthdate: 'data de nascimento',
+    phone: 'celular',
+    address: 'endereço',
+    status: 'ativo',
+    cnhImageUrl: 'cnh',
+    crlvImageUrl: 'crlv',
+  }
+
+
+
   function doDriverDataReadable(driver: Driver) {
     function readableIsoDateTime(date: string) {
       if(!date) return '-'
@@ -33,7 +48,7 @@ export function DriversTable() {
     function readableUrl(urlName: string) {
       return (url: string) => (
         <Button variant="link">
-          <Link href={url} className="text-brand-secondary-500">{urlName}</Link>
+          <Link href={url} className="text-brand-secondary-500" target="_blank">{urlName}</Link>
         </Button>
       );
     }
@@ -41,7 +56,6 @@ export function DriversTable() {
     const doReadableByField = {
       createdAt: readableIsoDateTime,
       updatedAt: readableIsoDateTime,
-      deletedAt: readableIsoDateTime,
       birthdate: readableIsoDate,
       cnhImageUrl: readableUrl("Foto da CNH"),
       crlvImageUrl: readableUrl("Foto da CRLV"),
@@ -74,9 +88,13 @@ export function DriversTable() {
 
   if (error) return <span>Erro: {error.message}</span>;
 
+  if(!datatableData.length) {
+    return <p>Não há nenhum motorista cadastrado.</p>
+  }
+
   return (
     <div className="max-w-full overflow-x-scroll">
-      <DataTable data={datatableData} />
+      <DataTable data={datatableData} columnsAliases={columnsAliases} />
     </div>
   );
 }

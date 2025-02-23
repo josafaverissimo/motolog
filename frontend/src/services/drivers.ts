@@ -15,7 +15,6 @@ interface DriverDataInterface {
 export interface Driver {
   createdAt: string;
   updatedAt: string;
-  deletedAt: string | null;
   name: string;
   cpf: string;
   hash: string;

@@ -133,7 +133,7 @@ export function DriversForm() {
 								<FormLabel>Nome</FormLabel>
 
 								<FormControl>
-									<Input {...field} />
+									<Input ref={field.ref} value={field.value} onChange={field.onChange} />
 								</FormControl>
 
 								<FormDescription>Informe seu nome</FormDescription>
@@ -151,7 +151,7 @@ export function DriversForm() {
 								<FormLabel>CPF</FormLabel>
 
 								<FormControl>
-									<IMaskInput {...field} mask="000.000.000-00" />
+									<IMaskInput inputRef={field.ref} value={field.value} onChange={field.onChange} mask="000.000.000-00" />
 								</FormControl>
 
 								<FormDescription>Informe seu cpf</FormDescription>
@@ -197,7 +197,7 @@ export function DriversForm() {
 								<FormLabel>Celular</FormLabel>
 
 								<FormControl>
-									<IMaskInput {...field} mask="(00) 9 0000-0000" />
+									<IMaskInput inputRef={field.ref} value={field.value} onChange={field.onChange} mask="(00) 9 0000-0000" />
 								</FormControl>
 
 								<FormDescription>

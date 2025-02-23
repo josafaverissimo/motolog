@@ -86,11 +86,12 @@ export interface Data {
 
 export interface DataTableProps {
   data: Data[];
+  columnsAliases: { [key: string]: string }
 }
 
 const ID_COLUMNS = new Set(['id', 'hash'])
 
-export function DataTable({ data }: DataTableProps) {
+export function DataTable({ data, columnsAliases }: DataTableProps) {
   const columns = Object.keys(data.length && data[0] || {});
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -110,7 +111,9 @@ export function DataTable({ data }: DataTableProps) {
     const columnToAdd: ColumnDef<Data> = {
       enableHiding: !isId,
       accessorKey: column,
-      header: () => <span className="capitalize">{column}</span>,
+      header: () => <span className="capitalize">
+        {columnsAliases[column] || column}
+      </span>,
       cell: ({ row }) => {
         const cellValue = row.getValue(column);
 
@@ -142,8 +145,6 @@ export function DataTable({ data }: DataTableProps) {
 
         const cellType = isString ? 'string' : 'reactNode'
         const cell = getCellValueByType[cellType]()
-
-        console.log(cell)
 
         return cell;
       },

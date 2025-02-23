@@ -15,13 +15,13 @@ export default function Drivers() {
 	const [isFormOpen, setIsFormOpen] = useState(false);
 
 	useEffect(() => {
-		setIsFormOpen(localStorage.getItem('isFormOpen') === 'true')
-	}, [])
+		setIsFormOpen(localStorage.getItem("isFormOpen") === "true");
+	}, []);
 
 	function toggleForm() {
 		setIsFormOpen(!isFormOpen);
 
-		localStorage.setItem('isFormOpen', String(!isFormOpen))
+		localStorage.setItem("isFormOpen", String(!isFormOpen));
 	}
 
 	return (
@@ -61,8 +61,10 @@ export default function Drivers() {
 
 				<hr className="w-full" />
 
-				<div>
-					<DriversTable />
+				<div className="w-full flex justify-center">
+					<div className="max-w-[90%]">
+						<DriversTable />
+					</div>
 				</div>
 			</div>
 		</>
