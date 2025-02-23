@@ -4,7 +4,6 @@ import { ImagePreview } from "@/components/common/imagePreview";
 import { IMaskInput } from "@/components/common/imaskInput";
 import { Button } from "@/components/ui/button";
 import { DatePicker } from "@/components/ui/datepicker";
-import { toast } from 'react-toastify'
 import {
 	Form,
 	FormControl,
@@ -56,7 +55,13 @@ const formSchema = z.object({
 			(date) => new Date(date) < minimumAge,
 			"Deve-se ter no mínimo 18 anos",
 		),
-	phone: z.string().length(16, LENGTH_16_CHARACTERS).optional(),
+	phone: z.string().refine((phone) => {
+		if(!phone.length) {
+			return true
+		}
+
+		return phone.length === 16
+	}, LENGTH_16_CHARACTERS),
 	email: z
 		.string()
 		.email("Email inválido")
