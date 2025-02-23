@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import Link from "next/link";
 import { BusFront, Home, Phone } from "lucide-react";
@@ -21,38 +21,37 @@ export function AppSidebar() {
 		{
 			url: "/",
 			icon: Home,
-			active: false
+			active: false,
+			name: "Home",
 		},
 		{
 			url: "/drivers",
 			icon: BusFront,
-			active: false
+			active: false,
+			name: "Motoristas",
 		},
 		{
 			url: "/contact",
 			icon: Phone,
-			active: false
-		}
+			active: false,
+			name: "Contato",
+		},
 	];
 
-	for(const item of items) {
-		if(item.url === pathname) {
-			item.active = true
+	for (const item of items) {
+		if (item.url === pathname) {
+			item.active = true;
 		}
 	}
 
 	return (
 		<Sidebar>
 			<SidebarContent>
-				<SidebarGroup>
-					<SidebarGroupLabel>
-						<p>MotoLog</p>
-					</SidebarGroupLabel>
-
-					<SidebarGroupContent>
-						<SidebarMenu>
+				<SidebarGroup className="h-full">
+					<SidebarGroupContent className="h-full">
+						<SidebarMenu className="flex flex-col justify-center items-center h-full gap-12">
 							{items.map((item) => (
-								<SidebarMenuItem key={item.url}>
+								<SidebarMenuItem key={item.url} className="flex flex-col items-center">
 									<SidebarMenuButton asChild>
 										<Link
 											href={item.url}
@@ -61,6 +60,7 @@ export function AppSidebar() {
 											<item.icon className="!w-6 !h-6" />
 										</Link>
 									</SidebarMenuButton>
+									<span className="text-xs">{item.name}</span>
 								</SidebarMenuItem>
 							))}
 						</SidebarMenu>
