@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/app/layout/sidebar";
 import { AppHeader } from "@/components/app/layout/header";
+import { AppSidebar } from "@/components/app/layout/sidebar";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
+import { ToastContainer } from 'react-toastify'
 
 import "./globals.css";
 
@@ -26,13 +27,14 @@ export default function RootLayout({
 			<head>
 				<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 			</head>
-			<body>
+			<body className="max-w-[100vw]">
+				<ToastContainer />
 				<QueryClientProvider client={queryClient}>
 					<SidebarProvider>
 						<div className="flex w-screen">
 							<AppSidebar />
 
-							<div className="flex flex-col flex-auto">
+							<div className="flex flex-col flex-auto min-w-0">
 								<nav
 									className="
 										basis-[2rem] flex items-center px-4 py-2 rounded-xl

@@ -1,12 +1,10 @@
 "use client";
 
-import { useState, useRef } from "react";
-import type { ChangeEvent } from "react";
-import type { ControllerRenderProps } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { ImagePreview } from "@/components/common/imagePreview";
+import { IMaskInput } from "@/components/common/imaskInput";
 import { Button } from "@/components/ui/button";
+import { DatePicker } from "@/components/ui/datepicker";
+import { toast } from 'react-toastify'
 import {
 	Form,
 	FormControl,
@@ -17,16 +15,19 @@ import {
 	FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { IMaskInput } from "@/components/common/imaskInput";
 import { Switch } from "@/components/ui/switch";
-import { ImagePreview } from "@/components/common/imagePreview";
-import { DatePicker } from "@/components/ui/datepicker";
 import { validateCpf } from "@/lib/utils";
-import { useMutation } from "@tanstack/react-query";
 import { useDriversService } from "@/services/drivers";
-import type { AxiosResponse, AxiosError } from "axios";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation } from "@tanstack/react-query";
+import type { AxiosError, AxiosResponse } from "axios";
+import { useRef, useState } from "react";
+import type { ChangeEvent } from "react";
+import type { ControllerRenderProps } from "react-hook-form";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 
-const driversService = useDriversService()
+const driversService = useDriversService();
 
 const minimumAge = new Date();
 minimumAge.setFullYear(minimumAge.getFullYear() - 18);
@@ -76,9 +77,13 @@ export function DriversForm() {
 	const [cnh, setCnh] = useState<File | null>(null);
 	const [crlv, setCrlv] = useState<File | null>(null);
 
-	const mutationDriver = useMutation<AxiosResponse, AxiosError, z.infer<typeof formSchema>>({
-		mutationFn: (data) => driversService.addDriver(data)
-	})
+	const mutationDriver = useMutation<
+		AxiosResponse,
+		AxiosError,
+		z.infer<typeof formSchema>
+	>({
+		mutationFn: (data) => driversService.addDriver(data),
+	});
 
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
@@ -96,12 +101,12 @@ export function DriversForm() {
 	});
 
 	function onSubmit(values: z.infer<typeof formSchema>) {
-		mutationDriver.mutate(values)
+		mutationDriver.mutate(values);
 	}
 
 	function handlerImageInput(
 		event: ChangeEvent<HTMLInputElement>,
-		field: ControllerRenderProps<any, string>,
+		field: ControllerRenderProps<z.infer<typeof formSchema>, keyof z.infer<typeof formSchema>>,
 		setter: React.Dispatch<React.SetStateAction<File | null>>,
 	) {
 		const input = event.target;
@@ -129,7 +134,7 @@ export function DriversForm() {
 								<FormLabel>Nome</FormLabel>
 
 								<FormControl>
-									<Input {...field} />
+									<Input ref={field.ref} value={field.value} onChange={field.onChange} />
 								</FormControl>
 
 								<FormDescription>Informe seu nome</FormDescription>
@@ -147,7 +152,7 @@ export function DriversForm() {
 								<FormLabel>CPF</FormLabel>
 
 								<FormControl>
-									<IMaskInput {...field} mask="000.000.000-00" />
+									<IMaskInput inputRef={field.ref} value={field.value} onChange={field.onChange} mask="000.000.000-00" />
 								</FormControl>
 
 								<FormDescription>Informe seu cpf</FormDescription>
@@ -193,7 +198,7 @@ export function DriversForm() {
 								<FormLabel>Celular</FormLabel>
 
 								<FormControl>
-									<IMaskInput {...field} mask="(00) 9 0000-0000" />
+									<IMaskInput inputRef={field.ref} value={field.value} onChange={field.onChange} mask="(00) 9 0000-0000" />
 								</FormControl>
 
 								<FormDescription>

@@ -1,8 +1,5 @@
 "use client";
 
-import Link from "next/link";
-import { BusFront, Home, Phone } from "lucide-react";
-import { usePathname } from "next/navigation";
 import {
 	Sidebar,
 	SidebarContent,
@@ -13,6 +10,9 @@ import {
 	SidebarMenuButton,
 	SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { BusFront, Home, Phone } from "lucide-react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 export function AppSidebar() {
 	const pathname = usePathname();
@@ -51,11 +51,14 @@ export function AppSidebar() {
 					<SidebarGroupContent className="h-full">
 						<SidebarMenu className="flex flex-col justify-center items-center h-full gap-12">
 							{items.map((item) => (
-								<SidebarMenuItem key={item.url} className="flex flex-col items-center">
+								<SidebarMenuItem
+									key={item.url}
+									className="flex flex-col items-center"
+								>
 									<SidebarMenuButton asChild>
 										<Link
 											href={item.url}
-											className={`flex justify-center ${item.active ? 'bg-brand-300 dark:bg-brand-dark-300' : ''}`}
+											className={`flex justify-center ${item.active ? "bg-brand-300 dark:bg-brand-dark-300" : ""}`}
 										>
 											<item.icon className="!w-6 !h-6" />
 										</Link>

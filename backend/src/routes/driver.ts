@@ -7,12 +7,7 @@ import { useDriversRepository } from '../repositories/drivers';
 import type { DriverInterface } from '../repositories/drivers';
 
 const driverBodySchema = t.Object({
-	name: t.String({
-		custom: (value: string) => {
-			console.log('helo');
-			value.length < 10;
-		},
-	}),
+	name: t.String(),
 	cpf: t.String(),
 	birthdate: t.String(),
 	phone: t.Optional(t.String()),
@@ -95,5 +90,4 @@ export const driver = new Elysia({ prefix: '/driver' })
 	.post('/', ({ driver, body }) => driver.add(body), {
 		parse: 'multipart/form-data',
 		body: driverBodySchema,
-		beforeHandle({ body, error }) {},
 	});

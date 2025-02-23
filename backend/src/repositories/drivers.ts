@@ -21,7 +21,8 @@ export const useDriversRepository = () => {
 			skip: offset,
 			take: rowsPerPage,
 			omit: {
-				id: true
+				id: true,
+				deletedAt: true
 			}
 		});
 

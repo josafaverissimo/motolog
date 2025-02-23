@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
-import { Image } from "lucide-react";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { Image } from "lucide-react";
+import { useEffect, useState } from "react";
 
 type ImagePreviewProps = {
 	image: File | null;
@@ -18,28 +18,28 @@ export function ImagePreview({ image }: ImagePreviewProps) {
 			return;
 		}
 
-		const sizeKib = Number((image.size / 1024).toFixed(2))
-		const sizeMib = Number((sizeKib / 1024).toFixed(2))
-		const size = sizeKib > 1024 ? `${sizeMib}MiB` : `${sizeKib}KiB`
+		const sizeKib = Number((image.size / 1024).toFixed(2));
+		const sizeMib = Number((sizeKib / 1024).toFixed(2));
+		const size = sizeKib > 1024 ? `${sizeMib}MiB` : `${sizeKib}KiB`;
 
-		setImageName(image.name)
-		setImageSize(size)
+		setImageName(image.name);
+		setImageSize(size);
 
 		setImageSrc(URL.createObjectURL(image));
 	}, [image]);
 
 	function renderFooter() {
-	  if(!imageName || !imageSize) {
-	    return
-	  }
+		if (!imageName || !imageSize) {
+			return;
+		}
 
-	  return (
-	    <CardFooter>
+		return (
+			<CardFooter>
 				<p className="text-xs">
 					{imageName} | {imageSize}
 				</p>
 			</CardFooter>
-	  )
+		);
 	}
 
 	return (
@@ -56,7 +56,7 @@ export function ImagePreview({ image }: ImagePreviewProps) {
 				)}
 			</CardContent>
 
-      {renderFooter()}
+			{renderFooter()}
 		</Card>
 	);
 }
