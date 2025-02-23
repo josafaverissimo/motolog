@@ -28,8 +28,6 @@ export const useDriversService = () => {
 
     const headers = { 'Content-Type': 'multipart/formdata' }
 
-    console.log(api)
-
     return await api.post('/driver', formdata, { headers })
   }
 
