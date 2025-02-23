@@ -1,7 +1,11 @@
-import { Elysia } from "elysia";
+import { Elysia, t } from 'elysia';
+import { swagger } from '@elysiajs/swagger';
+import { cors } from '@elysiajs/cors'
+import { driver } from './routes/driver'
 
-const app = new Elysia().get("/", () => "Hello Elysia").listen(3000);
 
-console.log(
-  `🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`
-);
+const app = new Elysia()
+  .use(cors())
+  .use(swagger())
+  .use(driver)
+  .listen(8080);
