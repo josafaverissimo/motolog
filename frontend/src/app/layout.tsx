@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app/layout/sidebar";
 import { AppHeader } from "@/components/app/layout/header";
@@ -11,10 +12,14 @@ export default function RootLayout({
 }: Readonly<{
 	children: React.ReactNode;
 }>) {
-	const theme = localStorage.getItem('theme') || 'dark'
+	const [theme, setTheme] = useState("dark");
+
+	useEffect(() => {
+		setTheme(localStorage.getItem("theme") || "dark");
+	}, []);
 
 	return (
-		<html lang="pt-BR" className={theme === 'dark' ? 'dark' : ''}>
+		<html lang="pt-BR" className={theme === "dark" ? "dark" : ""}>
 			<head>
 				<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 			</head>

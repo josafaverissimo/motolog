@@ -29,8 +29,8 @@ const calendarExtraClasses: ClassNames = {
 
 export function DatePicker({ onSelectAction }: DatePickerProps) {
   const [date, setDate] = React.useState<Date>();
+
   const date18YearsOld = new Date();
-  console.log(date18YearsOld.getFullYear());
   date18YearsOld.setFullYear(date18YearsOld.getFullYear() - 18);
 
   const date100YearsOld = new Date();
