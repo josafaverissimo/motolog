@@ -1,30 +1,31 @@
-import { PrismaClient } from '@prisma/client'
-import type { DriverBodySchemaType } from '../routes/driver'
-
-const prisma = new PrismaClient()
+import { prisma } from '../database/instance';
 
 export interface DriverInterface {
   name: string;
   cpf: string;
-  birthdate: string; // A data está sendo convertida para ISO, então o tipo é string
+  birthdate: string;
   email: string;
   address: string;
-  status: boolean; // Assumindo que 'status' é um booleano
-  phone?: string; // 'phone' é opcional
+  status: boolean;
+  phone?: string;
   cnhImageUrl: string;
   crlvImageUrl: string;
 }
 
-
 export const useDriversRepository = () => {
-async function storeDriver(driver: DriverInterface) {
-    await prisma.driver.create({
-      data: driver
-    })
+  async function getDrivers(page: number, rowsPerPage: number) {
+    const offset = (page - 1) * rowsPerPage
 
-    console.log('driver stored')
-    console.log(driver)
+    const result = await prisma.driver.findMany({ skip: offset, take: rowsPerPage })
+
+    console.log(result)
   }
 
-  return { storeDriver }
-}
+  async function storeDriver(driver: DriverInterface) {
+    await prisma.driver.create({
+      data: { ...driver, hash: crypto.randomUUID() },
+    });
+  }
+
+  return { getDrivers, storeDriver };
+};

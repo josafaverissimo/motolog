@@ -19,21 +19,28 @@ const DriverBodySchema = t.Object({
 export type DriverBodySchemaType = Static<typeof DriverBodySchema>
 
 const BUCKET_NAME = 'motolog'
+const ROWS_PER_PAGE = 25
 
 class Driver {
   constructor(
     private driversRepository = useDriversRepository(),
     private s3Client = useS3Client()
-  ) {}
+  ) { }
+
+  async retrieve(page: number) {
+    console.log('getting')
+    await this.driversRepository.getDrivers(page, ROWS_PER_PAGE)
+  }
 
   async add(driverBody: DriverBodySchemaType) {
     const uploadCnhResult = await this.s3Client.uploadFile(BUCKET_NAME, driverBody.cnh)
     const uploadCrlvResult = await this.s3Client.uploadFile(BUCKET_NAME, driverBody.crlv)
 
-    if(uploadCnhResult.error || uploadCrlvResult.error) {
-      console.log(uploadCnhResult.error || uploadCrlvResult.error)
+    if (uploadCnhResult.error || uploadCrlvResult.error) {
+      const error = uploadCnhResult.error || uploadCrlvResult.error
+      console.error(error)
 
-      return
+      return { error: `Failed to upload documents: ${error}` }
     }
 
     const driverToStore: DriverInterface = {
@@ -46,7 +53,7 @@ class Driver {
       phone: driverBody.phone,
       cnhImageUrl: uploadCnhResult.value as string,
       crlvImageUrl: uploadCrlvResult.value as string
-     }
+    }
 
     this.driversRepository.storeDriver(driverToStore)
 
@@ -57,8 +64,13 @@ class Driver {
   }
 }
 
-export const driver = new Elysia({ prefix: '/driver'})
+export const driver = new Elysia({ prefix: '/driver' })
   .decorate('driver', new Driver())
+  .get('/', ({ driver, params: { page } }) => driver.retrieve(page), {
+    params: t.Object({
+      page: t.Number()
+    })
+  })
   .post('/', ({ driver, body }) => driver.add(body), {
     parse: 'multipart/form-data',
     body: DriverBodySchema
