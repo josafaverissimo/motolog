@@ -1,9 +1,19 @@
-import { DataTable} from '@/components/ui/datatable'
+import { DataTable } from "@/components/ui/datatable";
+import type { Data } from '@/components/ui/datatable'
+import { useQuery } from '@tanstack/react-query'
+import { useDriversService } from '@/services/drivers'
+
+const driversService = useDriversService()
 
 export function DriversTable() {
-  const data = [{status: 'ola', email: 'ola'}]
+  const { data, error, isLoading } = useQuery({
+    queryKey: ['drivers'],
+    queryFn: () => driversService.getDrivers(1)
+  })
 
-  return (
-    <DataTable data={data}/>
-  )
+  if(isLoading) return <span>Carregando...</span>
+
+  if(error) return <span>Erro: {error.message}</span>
+
+  return <DataTable data={data?.drivers as unknown as Data[] || []} />;
 }

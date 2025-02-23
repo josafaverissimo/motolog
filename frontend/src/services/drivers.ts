@@ -12,6 +12,26 @@ interface DriverDataInterface {
 	status?: boolean;
 }
 
+interface Driver {
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+  name: string;
+  cpf: string;
+  hash: string;
+  birthdate: string;
+  phone: string;
+  email: string;
+  address: string;
+  status: boolean;
+  cnhImageUrl: string;
+  crlvImageUrl: string;
+}
+
+interface DriversResponse {
+  drivers: Driver[];
+}
+
 export const useDriversService = () => {
 	async function addDriver(driverData: DriverDataInterface) {
 		const formdata = new FormData();
@@ -31,5 +51,13 @@ export const useDriversService = () => {
 		return await api.post("/driver", formdata, { headers });
 	}
 
-	return { addDriver };
+	async function getDrivers(page: number) {
+		const querystring = new URLSearchParams({ page: String(page) })
+
+		const { data } = await api.get<DriversResponse>(`/driver?${querystring}`)
+
+		return data
+	}
+
+	return { getDrivers, addDriver };
 };
