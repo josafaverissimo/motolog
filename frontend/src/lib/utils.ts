@@ -1,13 +1,13 @@
-import { clsx, type ClassValue } from "clsx"
-import { twMerge } from "tailwind-merge"
+import { clsx, type ClassValue } from "clsx";
+import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
+    return twMerge(clsx(inputs));
 }
 
 export function validateCpf(cpf: string): boolean {
-    cpf = cpf.replace(/[.-]/g, ""); // Remove dots and dashes
-    if (cpf.length !== 11 || /^(\d)\1+$/.test(cpf)) return false; // Check length and repeated sequences
+    cpf = cpf.replace(/[.-]/g, "");
+    if (cpf.length !== 11 || /^(\d)\1+$/.test(cpf)) return false;
 
     const calculateDigit = (part: string) => {
         let sum = 0;

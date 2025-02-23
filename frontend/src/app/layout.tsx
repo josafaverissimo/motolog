@@ -1,11 +1,14 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app/layout/sidebar";
 import { AppHeader } from "@/components/app/layout/header";
 
 import "./globals.css";
+
+const queryClient = new QueryClient();
 
 export default function RootLayout({
 	children,
@@ -24,26 +27,28 @@ export default function RootLayout({
 				<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 			</head>
 			<body>
-				<SidebarProvider>
-					<div className="flex w-screen">
-						<AppSidebar />
+				<QueryClientProvider client={queryClient}>
+					<SidebarProvider>
+						<div className="flex w-screen">
+							<AppSidebar />
 
-						<div className="flex flex-col flex-auto">
-							<nav
-								className="
-									basis-[2rem] flex items-center px-4 py-2
-									shadow dark:shadow-zinc-700 bg-gray-50 dark:bg-zinc-900 mx-4 my-2
-								"
-							>
-								<SidebarTrigger />
+							<div className="flex flex-col flex-auto">
+								<nav
+									className="
+										basis-[2rem] flex items-center px-4 py-2
+										shadow dark:shadow-zinc-700 bg-gray-50 dark:bg-zinc-900 mx-4 my-2
+									"
+								>
+									<SidebarTrigger />
 
-								<AppHeader />
-							</nav>
+									<AppHeader />
+								</nav>
 
-							<main className="flex-auto px-4">{children}</main>
+								<main className="flex-auto px-4">{children}</main>
+							</div>
 						</div>
-					</div>
-				</SidebarProvider>
+					</SidebarProvider>
+				</QueryClientProvider>
 			</body>
 		</html>
 	);
