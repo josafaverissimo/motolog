@@ -7,12 +7,13 @@ import type { Data } from "@/components/ui/datatable";
 import { useQuery } from "@tanstack/react-query";
 import { useDriversService } from "@/services/drivers";
 import type { Driver } from "@/services/drivers";
+import { toast } from "react-toastify";
 
 const driversService = useDriversService();
 
 interface DriversTableProps {
-  onEditRow?: (rowHash: string) => void
-  onDeleteRow?: (rowHash: string) => void
+  onEditRow?: (driver: Driver) => void
+  onDeleteRow?: (driver: Driver) => void
 }
 
 export function DriversTable({ onEditRow, onDeleteRow }: DriversTableProps) {
@@ -118,13 +119,31 @@ export function DriversTable({ onEditRow, onDeleteRow }: DriversTableProps) {
   }
 
   function handlerEditRow(driverHash: string) {
-    console.log('editing...')
-    console.log(driverHash)
+    if(!onEditRow) return
+
+    const driverToEdit = driversByHash.get(driverHash)
+
+    if(!driverToEdit) {
+      toast.error('Motorista não encontrado. Por favor, entre em contato com o suporte')
+
+      return
+    }
+
+    onEditRow(driverToEdit)
   }
 
   function handlerDeleteRow(driverHash: string) {
-    console.log('deleting')
-    console.log(driverHash)
+    if(!onDeleteRow) return
+
+    const driverToDelete = driversByHash.get(driverHash)
+
+    if(!driverToDelete) {
+      toast.error('Motorista não encontrado. Por favor, entre em contato com o suporte')
+
+      return
+    }
+
+    onDeleteRow(driverToDelete)
   }
 
   return (
