@@ -5,6 +5,7 @@ import { ImagePreview } from "@/components/common/imagePreview";
 import { IMaskInput } from "@/components/common/imaskInput";
 import { Button } from "@/components/ui/button";
 import { DatePicker } from "@/components/ui/datepicker";
+import { toast } from 'react-toastify'
 import {
 	Form,
 	FormControl,
@@ -42,7 +43,7 @@ const REQUIRED_FIELD = "O campo é obrigatório";
 
 const IMAGE_VALIDATION = z
 	.union([
-		z.string({ message: REQUIRED_FIELD}),
+		z.string({ message: REQUIRED_FIELD }),
 		z.instanceof(File, { message: REQUIRED_FIELD }),
 	])
 	.refine((file) => {
@@ -145,14 +146,18 @@ export function DriversForm({
 		AxiosError,
 		z.infer<typeof formSchema>
 	>({
-		mutationFn: (data) => {
+		mutationFn: async (data) => {
 			const dataToSave: DriverDataInterface = data;
 
 			if (driverToEdit) {
 				dataToSave.hash = driverToEdit.hash;
 			}
 
-			return driversService.saveDriver(data);
+			const response = await driversService.saveDriver(data);
+
+			toast.success('Dados salvos com sucesso!')
+
+			return response
 		},
 	});
 
@@ -442,15 +447,20 @@ export function DriversForm({
 
 				<Button
 					type="submit"
-					className="
+					className={`
 						bg-brand-ternary-300 dark:bg-brand-ternary-dark-300
 						text-brand-ternary-600 dark:text-brand-ternary-dark-600
 						font-bold text-lg
 						hover:bg-brand-300 dark:hover:bg-brand-dark-300
 						hover:text-brand-600 dark:hover:text-brand-dark-600
-					"
+						${mutationDriver.isPending && 'pointer-events-none'}
+					`}
 				>
-					{driverToEdit ? "Editar" : "Enviar"}
+					{mutationDriver.isPending
+						? "Salvando..."
+						: driverToEdit
+							? "Editar"
+							: "Enviar"}
 				</Button>
 			</form>
 		</Form>
