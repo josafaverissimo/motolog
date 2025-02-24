@@ -11,6 +11,13 @@ Basta simplesmente executar na raiz do projeto:
 docker compose up -d --build
 ```
 
+Garanta que as seguintes portas estejam livres:
+- 5711: para o frontend
+- 5712: para a api
+- 5713: para o banco de dados
+- 9000: para o minio
+- 9001: também para o minio
+
 ## Todo
 - [ ] Corrigir paginação
 - [ ] Recarregar dados dos motoristas ao inserir/editar um registro
