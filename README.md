@@ -20,6 +20,9 @@ Garanta que as seguintes portas estejam livres:
 - 9000: para o minio
 - 9001: também para o minio
 
+Acesse [localhost:5712/swagger](http://localhost:5712/swagger) para visualizar
+as rotas
+
 ## Todo
 - [ ] Corrigir paginação
 - [ ] Recarregar dados dos motoristas ao inserir/editar um registro
