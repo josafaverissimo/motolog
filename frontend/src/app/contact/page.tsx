@@ -51,6 +51,7 @@ export default function Contact() {
 									<Github className="w-4 h-4" />
 									<Link
 										href={manager.github}
+										target="_blank"
 										className="text-brand-secondary-500 dark:text-brand-secondary-dark-500"
 									>
 										Github

@@ -29,22 +29,24 @@ export function AppHeader() {
 			<div className="flex">
 				<ul className="flex">
 					<li>
-						<Button
-							variant="link"
-							className="text-brand-secondary-500 dark:text-brand-secondary-dark-500"
-						>
-							<Link href="https://github.com/josafaverissimo" target="_blank">
+						<Link href="https://github.com/josafaverissimo" target="_blank">
+							<Button
+								variant="link"
+								className="text-brand-secondary-500 dark:text-brand-secondary-dark-500"
+							>
 								Quem Somos?
-							</Link>
-						</Button>
+							</Button>
+						</Link>
 					</li>
 					<li>
-						<Button
-							variant="link"
-							className="text-brand-secondary-500 dark:text-brand-secondary-dark-500"
-						>
-							<Link href="/contact">Contato</Link>
-						</Button>
+						<Link href="/contact">
+							<Button
+								variant="link"
+								className="text-brand-secondary-500 dark:text-brand-secondary-dark-500"
+							>
+								Contato
+							</Button>
+						</Link>
 					</li>
 				</ul>
 

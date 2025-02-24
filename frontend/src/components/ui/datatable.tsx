@@ -39,6 +39,19 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Publisher } from "@/lib/observer";
+import type { Subscriber } from "@/lib/observer";
+
+const editRowPublisher = new Publisher<string>();
+const deleteRowPublisher = new Publisher<string>();
+
+function handlerEditRow(rowId: string) {
+  editRowPublisher.notify(rowId);
+}
+
+function handlerDeleteRow(rowId: string) {
+  deleteRowPublisher.notify(rowId)
+}
 
 export const baseColumns: ColumnDef<Data>[] = [
   {
@@ -69,8 +82,18 @@ export const baseColumns: ColumnDef<Data>[] = [
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuItem>Editar</DropdownMenuItem>
-            <DropdownMenuItem>Deletar</DropdownMenuItem>
+            <DropdownMenuItem
+              className="cursor-pointer"
+              onClick={() => handlerEditRow(row.getValue("hash"))}
+            >
+              Editar
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              className="cursor-pointer"
+              onClick={() => handlerDeleteRow(row.getValue("hash"))}
+            >
+              Deletar
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
@@ -86,13 +109,20 @@ export interface Data {
 
 export interface DataTableProps {
   data: Data[];
-  columnsAliases: { [key: string]: string }
+  columnsAliases?: { [key: string]: string };
+  onEditRow?: (rowId: string) => void;
+  onDeleteRow?: (rowId: string) => void;
 }
 
-const ID_COLUMNS = new Set(['id', 'hash'])
+const ID_COLUMNS = new Set(["id", "hash"]);
 
-export function DataTable({ data, columnsAliases }: DataTableProps) {
-  const columns = Object.keys(data.length && data[0] || {});
+export function DataTable({
+  data,
+  columnsAliases,
+  onEditRow,
+  onDeleteRow,
+}: DataTableProps) {
+  const columns = Object.keys((data.length && data[0]) || {});
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
@@ -102,33 +132,58 @@ export function DataTable({ data, columnsAliases }: DataTableProps) {
   const [rowSelection, setRowSelection] = React.useState({});
 
   React.useEffect(() => {
-    setColumnVisibility({hash: false})
-  }, [])
+    setColumnVisibility({ hash: false });
+
+    const editRowSubscriber: Subscriber<string> = {
+      update(rowId: string) {
+        if (!onEditRow) return;
+
+        onEditRow(rowId);
+      },
+    };
+
+    const deleteRowSubscriber: Subscriber<string> = {
+      update(rowId: string) {
+        if (!onDeleteRow) return;
+
+        onDeleteRow(rowId);
+      },
+    };
+
+    editRowPublisher.subscribe(editRowSubscriber);
+    deleteRowPublisher.subscribe(deleteRowSubscriber);
+
+    return () => {
+      editRowPublisher.unsubscribe(editRowSubscriber);
+      deleteRowPublisher.unsubscribe(deleteRowSubscriber);
+    };
+  }, []);
 
   const columnsDef: ColumnDef<Data>[] = columns.map((column) => {
-    const isId = ID_COLUMNS.has(column)
+    const isId = ID_COLUMNS.has(column);
 
     const columnToAdd: ColumnDef<Data> = {
       enableHiding: !isId,
       accessorKey: column,
-      header: () => <span className="capitalize">
-        {columnsAliases[column] || column}
-      </span>,
+      header: () => (
+        <span className="capitalize">{columnsAliases?.[column] || column}</span>
+      ),
       cell: ({ row }) => {
         const cellValue = row.getValue(column);
 
-        const isString = typeof cellValue === 'string'
-        const isReactNode = React.isValidElement(cellValue)
+        const isString = typeof cellValue === "string";
+        const isReactNode = React.isValidElement(cellValue);
 
         if (!isString && !isReactNode) {
           return;
         }
 
         const getCellValueByType = {
-          'string': () => {
-            const cell = cellValue as string
+          string: () => {
+            const cell = cellValue as string;
             const isTextTooLong = cell.length > 32;
-            const extraClasses = "border-dotted border-b-neutral-500 border-b-2 cursor-help";
+            const extraClasses =
+              "border-dotted border-b-neutral-500 border-b-2 cursor-help";
             const text = isTextTooLong ? cell.slice(0, 32) + "..." : cell;
 
             return (
@@ -138,13 +193,13 @@ export function DataTable({ data, columnsAliases }: DataTableProps) {
               >
                 {text}
               </div>
-            )
+            );
           },
-          'reactNode': () => cellValue
-        }
+          reactNode: () => cellValue,
+        };
 
-        const cellType = isString ? 'string' : 'reactNode'
-        const cell = getCellValueByType[cellType]()
+        const cellType = isString ? "string" : "reactNode";
+        const cell = getCellValueByType[cellType]();
 
         return cell;
       },
@@ -176,15 +231,7 @@ export function DataTable({ data, columnsAliases }: DataTableProps) {
 
   return (
     <div className="w-full">
-      <div className="flex items-center py-4">
-        {/* <Input */}
-        {/*   placeholder="Pesquisar" */}
-        {/*   value={(table.getColumn("email")?.getFilterValue() as string) ?? ""} */}
-        {/*   onChange={(event) => */}
-        {/*     table.getColumn("email")?.setFilterValue(event.target.value) */}
-        {/*   } */}
-        {/*   className="max-w-sm" */}
-        {/* /> */}
+      <div className="flex items-center py-4 px-2">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-auto">

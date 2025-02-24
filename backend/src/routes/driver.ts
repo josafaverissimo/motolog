@@ -67,11 +67,6 @@ class Driver {
 		};
 
 		this.driversRepository.storeDriver(driverToStore);
-
-		return {
-			message: 'Hello',
-			success: true,
-		};
 	}
 }
 

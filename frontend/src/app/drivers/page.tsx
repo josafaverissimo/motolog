@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-
+import { Driver } from '@/services/drivers'
 import { DriversForm } from "@/components/drivers/form";
+import type { DriverToEdit } from '@/components/drivers/form'
 import {
 	Collapsible,
 	CollapsibleContent,
@@ -12,6 +13,7 @@ import { ChevronsDownUp, ChevronsUpDown } from "lucide-react";
 import { DriversTable } from "@/components/drivers/table";
 
 export default function Drivers() {
+	const [driverDataToEdit, setDriverDataToEdit] = useState<DriverToEdit>()
 	const [isFormOpen, setIsFormOpen] = useState(false);
 
 	useEffect(() => {
@@ -22,6 +24,28 @@ export default function Drivers() {
 		setIsFormOpen(!isFormOpen);
 
 		localStorage.setItem("isFormOpen", String(!isFormOpen));
+	}
+
+	function handlerEditDriver(driver: Driver) {
+		const driverData: DriverToEdit = {
+			hash: driver.hash,
+			name: driver.name,
+			cpf: driver.cpf,
+			birthdate: driver.birthdate,
+			phone: driver.phone,
+			email: driver.email,
+			address: driver.address,
+			status: driver.status,
+			cnh: driver.cnhImageUrl,
+			crlv: driver.crlvImageUrl
+		}
+
+		setDriverDataToEdit(driverData)
+	}
+
+	function handlerDeleteDriver(driver: Driver) {
+		console.log('deleting')
+		console.log(driver)
 	}
 
 	return (
@@ -53,7 +77,7 @@ export default function Drivers() {
 						</CollapsibleTrigger>
 						<CollapsibleContent>
 							<div className="flex justify-center">
-								<DriversForm />
+								<DriversForm driverToEdit={driverDataToEdit} setDriverToEdit={setDriverDataToEdit}/>
 							</div>
 						</CollapsibleContent>
 					</Collapsible>
@@ -63,7 +87,7 @@ export default function Drivers() {
 
 				<div className="w-full flex justify-center">
 					<div className="max-w-[90%]">
-						<DriversTable />
+						<DriversTable onEditRow={handlerEditDriver} onDeleteRow={handlerDeleteDriver} />
 					</div>
 				</div>
 			</div>

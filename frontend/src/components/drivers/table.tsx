@@ -7,10 +7,17 @@ import type { Data } from "@/components/ui/datatable";
 import { useQuery } from "@tanstack/react-query";
 import { useDriversService } from "@/services/drivers";
 import type { Driver } from "@/services/drivers";
+import { toast } from "react-toastify";
 
 const driversService = useDriversService();
 
-export function DriversTable() {
+interface DriversTableProps {
+  onEditRow?: (driver: Driver) => void
+  onDeleteRow?: (driver: Driver) => void
+}
+
+export function DriversTable({ onEditRow, onDeleteRow }: DriversTableProps) {
+  const [driversByHash, setDriversByHash] = useState<Map<string, Driver>>(new Map())
   const [datatableData, setDatatableData] = useState<Data[]>([]);
   const { data, error, isLoading } = useQuery({
     queryKey: ["drivers"],
@@ -18,29 +25,27 @@ export function DriversTable() {
   });
 
   const columnsAliases = {
-    createdAt: 'criado em',
-    updatedAt: 'atualizado em',
-    name: 'nome',
-    cpf: 'cpf',
-    birthdate: 'data de nascimento',
-    phone: 'celular',
-    address: 'endereço',
-    status: 'ativo',
-    cnhImageUrl: 'cnh',
-    crlvImageUrl: 'crlv',
-  }
-
-
+    createdAt: "criado em",
+    updatedAt: "atualizado em",
+    name: "nome",
+    cpf: "cpf",
+    birthdate: "data de nascimento",
+    phone: "celular",
+    address: "endereço",
+    status: "ativo",
+    cnhImageUrl: "cnh",
+    crlvImageUrl: "crlv",
+  };
 
   function doDriverDataReadable(driver: Driver) {
     function readableIsoDateTime(date: string) {
-      if(!date) return '-'
+      if (!date) return "-";
 
       return new Date(date).toLocaleString("pt-BR");
     }
 
     function readableIsoDate(date: string) {
-      if(!date) return '-'
+      if (!date) return "-";
 
       return new Date(date).toLocaleDateString("pt-BR");
     }
@@ -48,26 +53,30 @@ export function DriversTable() {
     function readableUrl(urlName: string) {
       return (url: string) => (
         <Button variant="link">
-          <Link href={url} className="text-brand-secondary-500" target="_blank">{urlName}</Link>
+          <Link
+            href={url}
+            className="text-brand-secondary-500 dark:text-brand-secondary-dark-500"
+            target="_blank"
+          >
+            {urlName}
+          </Link>
         </Button>
       );
     }
 
     function readableStatus(status: boolean) {
-      const activeClass = status ? 'bg-green-600' : 'bg-red-600'
+      const activeClass = status ? "bg-green-600" : "bg-red-600";
 
-      return <div
-        className={`size-4 rounded-full ${activeClass}`}
-      ></div>
+      return <div className={`size-4 rounded-full ${activeClass}`}></div>;
     }
 
     const doReadableByField = {
       createdAt: readableIsoDateTime,
       updatedAt: readableIsoDateTime,
       birthdate: readableIsoDate,
-      cnhImageUrl: readableUrl("Ver da CNH"),
-      crlvImageUrl: readableUrl("Ver da CRLV"),
-      status: readableStatus
+      cnhImageUrl: readableUrl("Ver CNH"),
+      crlvImageUrl: readableUrl("Ver CRLV"),
+      status: readableStatus,
     };
 
     const readableDriverData: { [key: string]: string | ReactNode } = {
@@ -90,6 +99,14 @@ export function DriversTable() {
       return;
     }
 
+    setDriversByHash(
+      data.drivers.reduce((drivers, driver) => {
+        drivers.set(driver.hash, driver)
+
+        return drivers
+      }, new Map<string, Driver>())
+    )
+
     setDatatableData(data.drivers.map(doDriverDataReadable));
   }, [data]);
 
@@ -97,13 +114,46 @@ export function DriversTable() {
 
   if (error) return <span>Erro: {error.message}</span>;
 
-  if(!datatableData.length) {
-    return <p>Não há nenhum motorista cadastrado.</p>
+  if (!datatableData.length) {
+    return <p>Não há nenhum motorista cadastrado.</p>;
+  }
+
+  function handlerEditRow(driverHash: string) {
+    if(!onEditRow) return
+
+    const driverToEdit = driversByHash.get(driverHash)
+
+    if(!driverToEdit) {
+      toast.error('Motorista não encontrado. Por favor, entre em contato com o suporte')
+
+      return
+    }
+
+    onEditRow(driverToEdit)
+  }
+
+  function handlerDeleteRow(driverHash: string) {
+    if(!onDeleteRow) return
+
+    const driverToDelete = driversByHash.get(driverHash)
+
+    if(!driverToDelete) {
+      toast.error('Motorista não encontrado. Por favor, entre em contato com o suporte')
+
+      return
+    }
+
+    onDeleteRow(driverToDelete)
   }
 
   return (
     <div className="max-w-full overflow-x-scroll">
-      <DataTable data={datatableData} columnsAliases={columnsAliases} />
+      <DataTable
+        data={datatableData}
+        columnsAliases={columnsAliases}
+        onEditRow={handlerEditRow}
+        onDeleteRow={handlerDeleteRow}
+      />
     </div>
   );
 }

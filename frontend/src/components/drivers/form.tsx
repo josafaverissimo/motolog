@@ -1,10 +1,10 @@
 "use client";
 
+import { Ban } from "lucide-react";
 import { ImagePreview } from "@/components/common/imagePreview";
 import { IMaskInput } from "@/components/common/imaskInput";
 import { Button } from "@/components/ui/button";
 import { DatePicker } from "@/components/ui/datepicker";
-import { toast } from 'react-toastify'
 import {
 	Form,
 	FormControl,
@@ -18,14 +18,16 @@ import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { validateCpf } from "@/lib/utils";
 import { useDriversService } from "@/services/drivers";
+import type { DriverDataInterface } from "@/services/drivers";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { ChangeEvent } from "react";
-import type { ControllerRenderProps } from "react-hook-form";
+import type { ControllerRenderProps, UseFormReturn } from "react-hook-form";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import type { Dispatch, SetStateAction } from "react";
 
 const driversService = useDriversService();
 
@@ -36,13 +38,24 @@ const MIN_3_CHARACTERS = "O campo deve ter no mínimo 3 caracteres";
 const MAX_500_CHARACTERS = "O campo deve ter no máximo 500 caracteres";
 const LENGTH_14_CHARACTERS = "O campo deve ter 14 caracteres";
 const LENGTH_16_CHARACTERS = "O campo deve ter 16 caracteres";
+const REQUIRED_FIELD = "O campo é obrigatório";
 
 const IMAGE_VALIDATION = z
-	.instanceof(File, { message: "O campo é obrigatório" })
-	.refine(
-		(file) => file.type.split("/")[0] === "image",
-		"O arquivo deve ser uma imagem",
-	);
+	.union([
+		z.string({ message: REQUIRED_FIELD}),
+		z.instanceof(File, { message: REQUIRED_FIELD }),
+	])
+	.refine((file) => {
+		if (typeof file === "string") return true;
+
+		return file.type.split("/")[0] === "image";
+	}, "O arquivo deve ser uma imagem");
+
+const date18YearsOld = new Date();
+date18YearsOld.setFullYear(date18YearsOld.getFullYear() - 18);
+
+const date100YearsOld = new Date();
+date100YearsOld.setFullYear(date100YearsOld.getFullYear() - 100);
 
 const formSchema = z.object({
 	name: z.string().min(3, MIN_3_CHARACTERS).max(500, MAX_500_CHARACTERS),
@@ -56,7 +69,13 @@ const formSchema = z.object({
 			(date) => new Date(date) < minimumAge,
 			"Deve-se ter no mínimo 18 anos",
 		),
-	phone: z.string().length(16, LENGTH_16_CHARACTERS).optional(),
+	phone: z.string().refine((phone) => {
+		if (!phone.length) {
+			return true;
+		}
+
+		return phone.length === 16;
+	}, LENGTH_16_CHARACTERS),
 	email: z
 		.string()
 		.email("Email inválido")
@@ -71,34 +90,85 @@ const formSchema = z.object({
 	crlv: IMAGE_VALIDATION,
 });
 
-export function DriversForm() {
+export type DriverFormSchema = z.infer<typeof formSchema>;
+
+export interface DriverToEdit {
+	hash: string;
+	name: string | null;
+	cpf: string | null;
+	birthdate: string | null;
+	phone: string | null;
+	email: string | null;
+	address: string | null;
+	status: boolean | null;
+	cnh: string | null;
+	crlv: string | null;
+}
+
+export interface DriversFormProps {
+	driverToEdit?: DriverToEdit;
+	setDriverToEdit?: Dispatch<SetStateAction<DriverToEdit | undefined>>;
+}
+
+export function DriversForm({
+	driverToEdit,
+	setDriverToEdit,
+}: DriversFormProps) {
 	const cnhRef = useRef<HTMLInputElement | null>(null);
 	const crlvRef = useRef<HTMLInputElement | null>(null);
 	const [cnh, setCnh] = useState<File | null>(null);
 	const [crlv, setCrlv] = useState<File | null>(null);
+
+	const form = useForm<z.infer<typeof formSchema>>({
+		resolver: zodResolver(formSchema),
+		defaultValues: {
+			name: driverToEdit?.name || "",
+			cpf: driverToEdit?.cpf || "",
+			birthdate: driverToEdit?.birthdate || "",
+			phone: driverToEdit?.phone || "",
+			email: driverToEdit?.email || "",
+			address: driverToEdit?.address || "",
+			status: driverToEdit?.status || false,
+			cnh: undefined,
+			crlv: undefined,
+		},
+	});
+
+	function exitEditMode() {
+		if (!setDriverToEdit) return;
+
+		setDriverToEdit(undefined);
+	}
 
 	const mutationDriver = useMutation<
 		AxiosResponse,
 		AxiosError,
 		z.infer<typeof formSchema>
 	>({
-		mutationFn: (data) => driversService.addDriver(data),
-	});
+		mutationFn: (data) => {
+			const dataToSave: DriverDataInterface = data;
 
-	const form = useForm<z.infer<typeof formSchema>>({
-		resolver: zodResolver(formSchema),
-		defaultValues: {
-			name: "",
-			cpf: "",
-			birthdate: "",
-			phone: "",
-			email: "",
-			address: "",
-			status: false,
-			cnh: undefined,
-			crlv: undefined,
+			if (driverToEdit) {
+				dataToSave.hash = driverToEdit.hash;
+			}
+
+			return driversService.saveDriver(data);
 		},
 	});
+
+	useEffect(() => {
+		form.reset({
+			name: driverToEdit?.name || "",
+			cpf: driverToEdit?.cpf || "",
+			birthdate: driverToEdit?.birthdate || "",
+			phone: driverToEdit?.phone || "",
+			email: driverToEdit?.email || "",
+			address: driverToEdit?.address || "",
+			status: driverToEdit?.status || false,
+			cnh: driverToEdit?.cnh || undefined,
+			crlv: driverToEdit?.crlv || undefined,
+		});
+	}, [driverToEdit]);
 
 	function onSubmit(values: z.infer<typeof formSchema>) {
 		mutationDriver.mutate(values);
@@ -106,7 +176,10 @@ export function DriversForm() {
 
 	function handlerImageInput(
 		event: ChangeEvent<HTMLInputElement>,
-		field: ControllerRenderProps<z.infer<typeof formSchema>, keyof z.infer<typeof formSchema>>,
+		field: ControllerRenderProps<
+			z.infer<typeof formSchema>,
+			keyof z.infer<typeof formSchema>
+		>,
 		setter: React.Dispatch<React.SetStateAction<File | null>>,
 	) {
 		const input = event.target;
@@ -134,7 +207,11 @@ export function DriversForm() {
 								<FormLabel>Nome</FormLabel>
 
 								<FormControl>
-									<Input ref={field.ref} value={field.value} onChange={field.onChange} />
+									<Input
+										ref={field.ref}
+										value={field.value}
+										onChange={field.onChange}
+									/>
 								</FormControl>
 
 								<FormDescription>Informe seu nome</FormDescription>
@@ -152,7 +229,12 @@ export function DriversForm() {
 								<FormLabel>CPF</FormLabel>
 
 								<FormControl>
-									<IMaskInput inputRef={field.ref} value={field.value} onChange={field.onChange} mask="000.000.000-00" />
+									<IMaskInput
+										inputRef={field.ref}
+										value={field.value}
+										onChange={field.onChange}
+										mask="000.000.000-00"
+									/>
 								</FormControl>
 
 								<FormDescription>Informe seu cpf</FormDescription>
@@ -172,6 +254,10 @@ export function DriversForm() {
 								<FormControl>
 									<div>
 										<DatePicker
+											fromMonth={date100YearsOld}
+											toMonth={date18YearsOld}
+											defaultMonth={date18YearsOld}
+											month={field.value ? new Date(field.value) : undefined}
 											onSelectAction={(date) => {
 												field.onChange(date?.toISOString().split("T")[0]);
 											}}
@@ -198,7 +284,12 @@ export function DriversForm() {
 								<FormLabel>Celular</FormLabel>
 
 								<FormControl>
-									<IMaskInput inputRef={field.ref} value={field.value} onChange={field.onChange} mask="(00) 9 0000-0000" />
+									<IMaskInput
+										inputRef={field.ref}
+										value={field.value}
+										onChange={field.onChange}
+										mask="(00) 9 0000-0000"
+									/>
 								</FormControl>
 
 								<FormDescription>
@@ -274,7 +365,7 @@ export function DriversForm() {
 											onChange={(e) => handlerImageInput(e, field, setCnh)}
 											className="hidden"
 										/>
-										<ImagePreview image={cnh} />
+										<ImagePreview image={cnh || driverToEdit?.cnh || null} />
 									</div>
 								</FormControl>
 
@@ -310,7 +401,7 @@ export function DriversForm() {
 											className="hidden"
 										/>
 
-										<ImagePreview image={crlv} />
+										<ImagePreview image={crlv || driverToEdit?.crlv || null} />
 									</div>
 								</FormControl>
 
@@ -322,7 +413,7 @@ export function DriversForm() {
 					/>
 				</div>
 
-				<div>
+				<div className="w-full flex justify-between">
 					<FormField
 						control={form.control}
 						name="status"
@@ -341,6 +432,12 @@ export function DriversForm() {
 							</FormItem>
 						)}
 					/>
+
+					{driverToEdit && (
+						<Button type="button" variant="outline" onClick={exitEditMode}>
+							<Ban />
+						</Button>
+					)}
 				</div>
 
 				<Button
@@ -353,7 +450,7 @@ export function DriversForm() {
 						hover:text-brand-600 dark:hover:text-brand-dark-600
 					"
 				>
-					Enviar
+					{driverToEdit ? "Editar" : "Enviar"}
 				</Button>
 			</form>
 		</Form>
