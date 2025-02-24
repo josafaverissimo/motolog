@@ -46,16 +46,16 @@ export const useDriversService = () => {
 			formdata.append(key, value);
 		}
 
-		["cnh", "crlv"].forEach((imageField) => {
+		for(const imageField of ["cnh", "crlv"]) {
 			if (typeof formdata.get(imageField) === "string") {
 				formdata.delete(imageField);
 			}
-		});
+		};
 
 		const headers = { "Content-Type": "multipart/formdata" };
 
 		if (driverData.hash) {
-			return await api.put(`/driver/${driverData.hash}`, formdata, { headers });
+			return await api.patch(`/driver/${driverData.hash}`, formdata, { headers });
 		}
 
 		return await api.post("/driver", formdata, { headers });
