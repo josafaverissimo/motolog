@@ -8,6 +8,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useDriversService } from "@/services/drivers";
 import type { Driver } from "@/services/drivers";
 import { toast } from "react-toastify";
+import { PaginationState } from "@tanstack/react-table";
 
 const driversService = useDriversService();
 
@@ -19,9 +20,13 @@ interface DriversTableProps {
 export function DriversTable({ onEditRow, onDeleteRow }: DriversTableProps) {
   const [driversByHash, setDriversByHash] = useState<Map<string, Driver>>(new Map())
   const [datatableData, setDatatableData] = useState<Data[]>([]);
-  const { data, error, isLoading } = useQuery({
-    queryKey: ["drivers"],
-    queryFn: () => driversService.getDrivers(1),
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: 25
+  })
+  const { data, error, isLoading, refetch } = useQuery({
+    queryKey: ["drivers", pagination.pageIndex, pagination.pageSize],
+    queryFn: () => driversService.getDrivers(pagination.pageIndex + 1)
   });
 
   const columnsAliases = {
@@ -36,6 +41,10 @@ export function DriversTable({ onEditRow, onDeleteRow }: DriversTableProps) {
     cnhImageUrl: "cnh",
     crlvImageUrl: "crlv",
   };
+
+  useEffect(() => {
+    refetch()
+  }, [pagination])
 
   function doDriverDataReadable(driver: Driver) {
     function readableIsoDateTime(date: string) {
@@ -67,7 +76,7 @@ export function DriversTable({ onEditRow, onDeleteRow }: DriversTableProps) {
     function readableStatus(status: boolean) {
       const activeClass = status ? "bg-green-600" : "bg-red-600";
 
-      return <div className={`size-4 rounded-full ${activeClass}`}></div>;
+      return <div className={`size-4 rounded-full ${activeClass}`} />;
     }
 
     const doReadableByField = {
@@ -150,6 +159,9 @@ export function DriversTable({ onEditRow, onDeleteRow }: DriversTableProps) {
     <div className="max-w-full overflow-x-scroll">
       <DataTable
         data={datatableData}
+        pagination={pagination}
+        setPagination={setPagination}
+        totalItems={data?.totalItems}
         columnsAliases={columnsAliases}
         onEditRow={handlerEditRow}
         onDeleteRow={handlerDeleteRow}

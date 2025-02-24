@@ -26,11 +26,16 @@ export const useDriversRepository = () => {
 			},
 		});
 
-		return result.map((driver) => ({
-			...driver,
-			cnhImageUrl: baseUrl(`/files/${driver.cnhImageUrl}`),
-			crlvImageUrl: baseUrl(`/files/${driver.crlvImageUrl}`),
-		}));
+		const totalItems = await prisma.driver.count();
+
+		return {
+			totalItems,
+			data: result.map((driver) => ({
+				...driver,
+				cnhImageUrl: baseUrl(`/files/${driver.cnhImageUrl}`),
+				crlvImageUrl: baseUrl(`/files/${driver.crlvImageUrl}`),
+			})),
+		};
 	}
 
 	async function updateDriver(driver: Partial<DriverInterface>, hash: string) {

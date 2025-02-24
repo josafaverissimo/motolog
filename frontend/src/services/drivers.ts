@@ -29,6 +29,7 @@ export interface Driver {
 }
 
 interface DriversResponse {
+	totalItems: number,
 	drivers: Driver[];
 }
 

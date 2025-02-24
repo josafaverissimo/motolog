@@ -46,7 +46,7 @@ class Driver {
 			ROWS_PER_PAGE,
 		);
 
-		return { drivers };
+		return { totalItems: drivers.totalItems, drivers: drivers.data };
 	}
 
 	async add(driverBody: DriverPostBodySchemaType) {
