@@ -12,11 +12,15 @@ import {
 	PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-
+import { useEffect } from "react";
 import type { ClassNames } from "react-day-picker";
 
 interface DatePickerProps {
 	onSelectAction: (date: Date | undefined) => void;
+	fromMonth: Date;
+	toMonth: Date;
+	defaultMonth: Date;
+	month?: Date;
 }
 
 const calendarExtraClasses: ClassNames = {
@@ -27,19 +31,23 @@ const calendarExtraClasses: ClassNames = {
 	caption_label: cn("hidden"),
 };
 
-export function DatePicker({ onSelectAction }: DatePickerProps) {
+export function DatePicker({
+	onSelectAction,
+	fromMonth,
+	toMonth,
+	defaultMonth,
+	month,
+}: DatePickerProps) {
 	const [date, setDate] = React.useState<Date>();
-
-	const date18YearsOld = new Date();
-	date18YearsOld.setFullYear(date18YearsOld.getFullYear() - 18);
-
-	const date100YearsOld = new Date();
-	date100YearsOld.setFullYear(date100YearsOld.getFullYear() - 100);
 
 	function handleDate(newDate: Date | undefined) {
 		setDate(newDate);
 		onSelectAction(newDate);
 	}
+
+	useEffect(() => {
+		setDate(month)
+	}, [month]);
 
 	return (
 		<Popover>
@@ -64,9 +72,9 @@ export function DatePicker({ onSelectAction }: DatePickerProps) {
 					locale={ptBR}
 					mode="single"
 					captionLayout="dropdown"
-					defaultMonth={date18YearsOld}
-					fromMonth={date100YearsOld} // 🔥 Substitui startMonth
-					toMonth={date18YearsOld}
+					defaultMonth={defaultMonth}
+					fromMonth={fromMonth}
+					toMonth={toMonth}
 					selected={date}
 					onSelect={handleDate}
 					initialFocus
