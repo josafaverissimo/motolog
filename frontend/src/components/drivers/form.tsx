@@ -1,5 +1,6 @@
 "use client";
 
+import { Ban } from "lucide-react";
 import { ImagePreview } from "@/components/common/imagePreview";
 import { IMaskInput } from "@/components/common/imaskInput";
 import { Button } from "@/components/ui/button";
@@ -17,14 +18,16 @@ import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { validateCpf } from "@/lib/utils";
 import { useDriversService } from "@/services/drivers";
+import type { DriverDataInterface } from "@/services/drivers";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
 import { useEffect, useRef, useState } from "react";
 import type { ChangeEvent } from "react";
-import type { ControllerRenderProps } from "react-hook-form";
+import type { ControllerRenderProps, UseFormReturn } from "react-hook-form";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import type { Dispatch, SetStateAction } from "react";
 
 const driversService = useDriversService();
 
@@ -85,6 +88,7 @@ const formSchema = z.object({
 export type DriverFormSchema = z.infer<typeof formSchema>;
 
 export interface DriverToEdit {
+	hash: string;
 	name: string | null;
 	cpf: string | null;
 	birthdate: string | null;
@@ -92,27 +96,23 @@ export interface DriverToEdit {
 	email: string | null;
 	address: string | null;
 	status: boolean | null;
-	cnh: File | null;
-	crlv: File | null;
+	cnh: string | null;
+	crlv: string | null;
 }
 
 export interface DriversFormProps {
 	driverToEdit?: DriverToEdit;
+	setDriverToEdit?: Dispatch<SetStateAction<DriverToEdit | undefined>>;
 }
 
-export function DriversForm({ driverToEdit }: DriversFormProps) {
+export function DriversForm({
+	driverToEdit,
+	setDriverToEdit,
+}: DriversFormProps) {
 	const cnhRef = useRef<HTMLInputElement | null>(null);
 	const crlvRef = useRef<HTMLInputElement | null>(null);
 	const [cnh, setCnh] = useState<File | null>(null);
 	const [crlv, setCrlv] = useState<File | null>(null);
-
-	const mutationDriver = useMutation<
-		AxiosResponse,
-		AxiosError,
-		z.infer<typeof formSchema>
-	>({
-		mutationFn: (data) => driversService.addDriver(data),
-	});
 
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
@@ -126,24 +126,44 @@ export function DriversForm({ driverToEdit }: DriversFormProps) {
 			status: driverToEdit?.status || false,
 			cnh: undefined,
 			crlv: undefined,
+		}
+	})
+
+	function exitEditMode() {
+		if (!setDriverToEdit) return;
+
+		setDriverToEdit(undefined);
+	}
+
+	const mutationDriver = useMutation<
+		AxiosResponse,
+		AxiosError,
+		z.infer<typeof formSchema>
+	>({
+		mutationFn: (data) => {
+			const dataToSave: DriverDataInterface = data;
+
+			if (driverToEdit) {
+				dataToSave.hash = driverToEdit.hash;
+			}
+
+			return driversService.saveDriver(data);
 		},
 	});
 
 	useEffect(() => {
-		if(!driverToEdit) return
-
 		form.reset({
-			name: driverToEdit.name || "",
-			cpf: driverToEdit.cpf || "",
-			birthdate: driverToEdit.birthdate || "",
-			phone: driverToEdit.phone || "",
-			email: driverToEdit.email || "",
-			address: driverToEdit.address || "",
-			status: driverToEdit.status || false,
+			name: driverToEdit?.name || "",
+			cpf: driverToEdit?.cpf || "",
+			birthdate: driverToEdit?.birthdate || "",
+			phone: driverToEdit?.phone || "",
+			email: driverToEdit?.email || "",
+			address: driverToEdit?.address || "",
+			status: driverToEdit?.status || false,
 			cnh: undefined,
-			crlv: undefined
-		})
-	}, [driverToEdit])
+			crlv: undefined,
+		});
+	}, [driverToEdit]);
 
 	function onSubmit(values: z.infer<typeof formSchema>) {
 		mutationDriver.mutate(values);
@@ -340,7 +360,7 @@ export function DriversForm({ driverToEdit }: DriversFormProps) {
 											onChange={(e) => handlerImageInput(e, field, setCnh)}
 											className="hidden"
 										/>
-										<ImagePreview image={cnh} />
+										<ImagePreview image={cnh || driverToEdit?.cnh || null} />
 									</div>
 								</FormControl>
 
@@ -376,7 +396,7 @@ export function DriversForm({ driverToEdit }: DriversFormProps) {
 											className="hidden"
 										/>
 
-										<ImagePreview image={crlv} />
+										<ImagePreview image={crlv || driverToEdit?.crlv || null} />
 									</div>
 								</FormControl>
 
@@ -388,7 +408,7 @@ export function DriversForm({ driverToEdit }: DriversFormProps) {
 					/>
 				</div>
 
-				<div>
+				<div className="w-full flex justify-between">
 					<FormField
 						control={form.control}
 						name="status"
@@ -407,6 +427,12 @@ export function DriversForm({ driverToEdit }: DriversFormProps) {
 							</FormItem>
 						)}
 					/>
+
+					{driverToEdit && (
+						<Button type="button" variant="outline" onClick={exitEditMode}>
+							<Ban />
+						</Button>
+					)}
 				</div>
 
 				<Button
@@ -419,7 +445,7 @@ export function DriversForm({ driverToEdit }: DriversFormProps) {
 						hover:text-brand-600 dark:hover:text-brand-dark-600
 					"
 				>
-					Enviar
+					{driverToEdit ? "Editar" : "Enviar"}
 				</Button>
 			</form>
 		</Form>

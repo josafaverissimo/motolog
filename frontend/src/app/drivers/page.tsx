@@ -28,6 +28,7 @@ export default function Drivers() {
 
 	function handlerEditDriver(driver: Driver) {
 		const driverData: DriverToEdit = {
+			hash: driver.hash,
 			name: driver.name,
 			cpf: driver.cpf,
 			birthdate: driver.birthdate,
@@ -35,8 +36,8 @@ export default function Drivers() {
 			email: driver.email,
 			address: driver.address,
 			status: driver.status,
-			cnh: null,
-			crlv: null
+			cnh: driver.cnhImageUrl,
+			crlv: driver.crlvImageUrl
 		}
 
 		setDriverDataToEdit(driverData)
@@ -76,7 +77,7 @@ export default function Drivers() {
 						</CollapsibleTrigger>
 						<CollapsibleContent>
 							<div className="flex justify-center">
-								<DriversForm driverToEdit={driverDataToEdit}/>
+								<DriversForm driverToEdit={driverDataToEdit} setDriverToEdit={setDriverDataToEdit}/>
 							</div>
 						</CollapsibleContent>
 					</Collapsible>

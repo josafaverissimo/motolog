@@ -3,7 +3,7 @@ import { Image } from "lucide-react";
 import { useEffect, useState } from "react";
 
 type ImagePreviewProps = {
-	image: File | null;
+	image: File | string | null;
 };
 
 export function ImagePreview({ image }: ImagePreviewProps) {
@@ -16,6 +16,12 @@ export function ImagePreview({ image }: ImagePreviewProps) {
 			setImageSrc(null);
 
 			return;
+		}
+
+		if(typeof image === 'string') {
+			setImageSrc(image)
+
+			return
 		}
 
 		const sizeKib = Number((image.size / 1024).toFixed(2));

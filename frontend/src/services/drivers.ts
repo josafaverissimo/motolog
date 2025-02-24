@@ -1,6 +1,6 @@
 import { api } from "@/lib/api";
 
-interface DriverDataInterface {
+export interface DriverDataInterface {
 	name: string;
 	cpf: string;
 	birthdate: string;
@@ -8,6 +8,7 @@ interface DriverDataInterface {
 	address: string;
 	cnh: File;
 	crlv: File;
+	hash?: string;
 	phone?: string;
 	status?: boolean;
 }
@@ -32,7 +33,7 @@ interface DriversResponse {
 }
 
 export const useDriversService = () => {
-	async function addDriver(driverData: DriverDataInterface) {
+	async function saveDriver(driverData: DriverDataInterface) {
 		const formdata = new FormData();
 
 		for (const entry of Object.entries(driverData)) {
@@ -47,6 +48,10 @@ export const useDriversService = () => {
 
 		const headers = { "Content-Type": "multipart/formdata" };
 
+		if(driverData.hash) {
+			return await api.put(`/driver/${driverData.hash}`, formdata, { headers })
+		}
+
 		return await api.post("/driver", formdata, { headers });
 	}
 
@@ -58,5 +63,5 @@ export const useDriversService = () => {
 		return data
 	}
 
-	return { getDrivers, addDriver };
+	return { getDrivers, saveDriver };
 };

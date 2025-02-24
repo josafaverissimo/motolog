@@ -48,8 +48,8 @@ export default function Home() {
 
 					<div
 						className="
-					hidden lg:block absolute right-[-20rem] bottom-[-15rem] z-10
-				"
+							hidden lg:block absolute right-[-20rem] bottom-[-15rem] z-10
+						"
 					>
 						<img src={secondaryImgUrl} alt="Imagem secundária" />
 					</div>
