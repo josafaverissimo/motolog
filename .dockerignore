@@ -1,0 +1,34 @@
+# Ignorar node_modules (dependências podem ser instaladas durante o build)
+node_modules/
+npm-debug.log
+yarn-error.log
+bun.lockb
+package-lock.json
+
+# Pastas de build (Next.js ou Bun)
+.next/
+out/
+
+# Arquivos de cache do Bun
+.pnp/
+.pnp.js
+
+# Arquivos temporários e de configuração local (como editores de código)
+.vscode/
+.idea/
+*.iml
+
+# Logs e arquivos temporários
+*.log
+*.tmp
+*.swp
+*.DS_Store
+
+# Diretórios de teste e cobertura
+coverage/
+test/
+tests/
+
+# Arquivos específicos do Docker
+docker-compose.override.yml
+
