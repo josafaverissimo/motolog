@@ -38,13 +38,18 @@ const MIN_3_CHARACTERS = "O campo deve ter no mínimo 3 caracteres";
 const MAX_500_CHARACTERS = "O campo deve ter no máximo 500 caracteres";
 const LENGTH_14_CHARACTERS = "O campo deve ter 14 caracteres";
 const LENGTH_16_CHARACTERS = "O campo deve ter 16 caracteres";
+const REQUIRED_FIELD = "O campo é obrigatório";
 
 const IMAGE_VALIDATION = z
-	.instanceof(File, { message: "O campo é obrigatório" })
-	.refine(
-		(file) => file.type.split("/")[0] === "image",
-		"O arquivo deve ser uma imagem",
-	);
+	.union([
+		z.string({ message: REQUIRED_FIELD}),
+		z.instanceof(File, { message: REQUIRED_FIELD }),
+	])
+	.refine((file) => {
+		if (typeof file === "string") return true;
+
+		return file.type.split("/")[0] === "image";
+	}, "O arquivo deve ser uma imagem");
 
 const date18YearsOld = new Date();
 date18YearsOld.setFullYear(date18YearsOld.getFullYear() - 18);
@@ -126,8 +131,8 @@ export function DriversForm({
 			status: driverToEdit?.status || false,
 			cnh: undefined,
 			crlv: undefined,
-		}
-	})
+		},
+	});
 
 	function exitEditMode() {
 		if (!setDriverToEdit) return;
@@ -160,8 +165,8 @@ export function DriversForm({
 			email: driverToEdit?.email || "",
 			address: driverToEdit?.address || "",
 			status: driverToEdit?.status || false,
-			cnh: undefined,
-			crlv: undefined,
+			cnh: driverToEdit?.cnh || undefined,
+			crlv: driverToEdit?.crlv || undefined,
 		});
 	}, [driverToEdit]);
 
