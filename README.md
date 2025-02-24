@@ -23,6 +23,7 @@ Garanta que as seguintes portas estejam livres:
 ## Todo
 - [ ] Corrigir paginação
 - [ ] Recarregar dados dos motoristas ao inserir/editar um registro
+- [ ] Implementar deleção de registros
 
 ## Tecnologias utilizadas
 
