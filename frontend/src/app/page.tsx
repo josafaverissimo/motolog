@@ -26,17 +26,20 @@ export default function Home() {
 							confirmação das entregas de suas cargas
 						</p>
 
-						<Button
-							className="
-								bg-brand-ternary-300 dark:bg-brand-ternary-dark-300
-								text-brand-ternary-600 dark:text-brand-ternary-dark-600
-								font-bold text-lg
-								hover:bg-brand-300 dark:hover:bg-brand-dark-300
-								hover:text-brand-600 dark:hover:text-brand-dark-600
-							"
-						>
-							<Link href="/drivers">Cadastrar Motorista</Link>
-						</Button>
+						<Link href="/drivers">
+							<Button
+								className="
+									w-full
+									bg-brand-ternary-300 dark:bg-brand-ternary-dark-300
+									text-brand-ternary-600 dark:text-brand-ternary-dark-600
+									font-bold text-lg
+									hover:bg-brand-300 dark:hover:bg-brand-dark-300
+									hover:text-brand-600 dark:hover:text-brand-dark-600
+								"
+							>
+								Cadastrar Motorista
+							</Button>
+						</Link>
 					</div>
 
 					<div className="hidden md:block z-20 flex-3">
