@@ -11,6 +11,8 @@ Basta simplesmente executar na raiz do projeto:
 docker compose up -d --build
 ```
 
+Pronto. Agora é só acessar: [localhost:5711](http://localhost:5711)
+
 Garanta que as seguintes portas estejam livres:
 - 5711: para o frontend
 - 5712: para a api
