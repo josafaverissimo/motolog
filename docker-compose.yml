@@ -1,0 +1,61 @@
+services:
+  nextjs:
+    container_name: motolog-frontend
+    build:
+      context: .
+      dockerfile: ./docker/nextjs/Dockerfile
+    ports:
+      - "5711:5711"
+    command: /start.sh
+    env_file:
+      - ./frontend/.env
+    networks:
+      - motolog-network
+
+  elysia:
+    container_name: motolog-backend
+    build:
+      context: .
+      dockerfile: ./docker/elysia/Dockerfile
+    ports:
+      - "5712:8080"
+    depends_on:
+      - psql
+      - minio
+    env_file:
+      - ./backend/.env
+    command: /start.sh
+    networks:
+      - motolog-network
+
+  psql:
+    container_name: motolog-psql
+    image: postgres:16-alpine3.19
+    volumes:
+      - './docker/psql/data:/var/lib/postgresql/data'
+    ports:
+      - '5713:5432'
+    env_file:
+      - './docker/psql/.env'
+    networks:
+      - motolog-network
+
+  minio:
+    image: quay.io/minio/minio
+    container_name: motolog-minio
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      - MINIO_ROOT_USER=admin
+      - MINIO_ROOT_PASSWORD=adminadmin
+      - MINIO_DEFAULT_BUCKETS=motolog
+    volumes:
+      - ~/minio/data:/data
+    command: server /data --console-address ":9001"
+    networks:
+      - motolog-network
+
+networks:
+  motolog-network:
+    driver: bridge
