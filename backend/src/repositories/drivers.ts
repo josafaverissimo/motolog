@@ -1,5 +1,5 @@
 import { prisma } from '../database/instance';
-import { baseUrl } from '../lib/utils'
+import { baseUrl } from '../lib/utils';
 
 export interface DriverInterface {
 	name: string;
@@ -22,15 +22,22 @@ export const useDriversRepository = () => {
 			take: rowsPerPage,
 			omit: {
 				id: true,
-				deletedAt: true
-			}
+				deletedAt: true,
+			},
 		});
 
-		return result.map(driver => ({
+		return result.map((driver) => ({
 			...driver,
 			cnhImageUrl: baseUrl(`/files/${driver.cnhImageUrl}`),
-			crlvImageUrl: baseUrl(`/files/${driver.crlvImageUrl}`)
+			crlvImageUrl: baseUrl(`/files/${driver.crlvImageUrl}`),
 		}));
+	}
+
+	async function updateDriver(driver: Partial<DriverInterface>, hash: string) {
+		await prisma.driver.update({
+			where: { hash },
+			data: { ...driver },
+		});
 	}
 
 	async function storeDriver(driver: DriverInterface) {
@@ -39,5 +46,5 @@ export const useDriversRepository = () => {
 		});
 	}
 
-	return { getDrivers, storeDriver };
+	return { getDrivers, storeDriver, updateDriver };
 };
